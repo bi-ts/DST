@@ -62,8 +62,7 @@ TEST(test_allocator_utility, throw_in_ctor)
 
   try
   {
-    const auto p_object =
-      dst::new_object<throw_in_ctor>(allocator);
+    dst::new_object<throw_in_ctor>(allocator);
   }
   catch(...)
   {
