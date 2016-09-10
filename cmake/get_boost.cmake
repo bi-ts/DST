@@ -5,6 +5,7 @@ set(_input_file "${CMAKE_CURRENT_LIST_DIR}/get_boost/CMakeLists.txt.in")
 
 macro(get_boost boost_version boost_md5)
   set(BOOST_ROOT "${CMAKE_BINARY_DIR}/ext-projects/boost/src/boost")
+  set(Boost_NO_SYSTEM_PATHS ON)
 
   find_package(Boost 1.61.0 EXACT QUIET)
 
