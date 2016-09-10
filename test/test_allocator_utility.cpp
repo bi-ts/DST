@@ -7,92 +7,99 @@
 #include <dst/allocator/counter_allocator.h>
 #include <dst/allocator/utility.h>
 
-#include <gtest/gtest.h>
+#include <boost/test/unit_test.hpp>
 
 #include <string>
 #include <vector>
 
 namespace
 {
-  struct throw_in_ctor
+struct throw_in_ctor
+{
+  throw_in_ctor()
   {
-    throw_in_ctor()
-    {
-      throw 0;
-    }
-  };
+    throw 0;
+  }
+};
 
-  struct throw_in_dtor
+struct throw_in_dtor
+{
+  ~throw_in_dtor() noexcept(false)
   {
-    ~throw_in_dtor() noexcept(false)
-    {
-      throw 0;
-    }
-  };
+    throw 0;
+  }
+};
 }
 
-TEST(test_allocator_utility, new_delete_object)
+BOOST_AUTO_TEST_SUITE(test_allocator_utility)
+
+BOOST_AUTO_TEST_CASE(test_new_delete_object)
 {
   using allocator_type = dst::counter_allocator<int>;
 
   allocator_type allocator;
 
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 0);
 
   const auto p_vector =
     dst::new_object<std::vector<std::string>>(allocator, 3, "42");
 
-  EXPECT_NE(0, allocator.allocated());
+  BOOST_TEST(allocator.allocated() != 0);
 
-  EXPECT_EQ(3, p_vector->size());
-  EXPECT_EQ("42", p_vector->at(1));
+  BOOST_TEST(p_vector->size() == 3);
+  BOOST_TEST(p_vector->at(1) == "42");
 
   dst::delete_object<std::vector<std::string>>(allocator, p_vector);
 
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 0);
 }
 
-TEST(test_allocator_utility, throw_in_ctor)
+BOOST_AUTO_TEST_CASE(test_throw_in_ctor)
 {
   using allocator_type = dst::counter_allocator<int>;
 
   allocator_type allocator;
 
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 0);
+
+  bool exception_was_thrown = false;
 
   try
   {
     dst::new_object<throw_in_ctor>(allocator);
   }
-  catch(...)
+  catch (...)
   {
-    EXPECT_EQ(0, allocator.allocated());
-    return;
+    exception_was_thrown = true;
   }
 
-  EXPECT_FALSE("Exception was not thrown");
+  BOOST_TEST(allocator.allocated() == 0);
+  BOOST_TEST(exception_was_thrown);
 }
 
-TEST(test_allocator_utility, throw_in_dtor)
+BOOST_AUTO_TEST_CASE(test_throw_in_dtor)
 {
   using allocator_type = dst::counter_allocator<int>;
 
   allocator_type allocator;
 
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 0);
 
-  const auto p_object =
-    dst::new_object<throw_in_dtor>(allocator);
+  const auto p_object = dst::new_object<throw_in_dtor>(allocator);
 
+  bool exception_was_thrown = false;
   try
   {
     dst::delete_object<throw_in_dtor>(allocator, p_object);
   }
-  catch(...)
+  catch (...)
   {
-    EXPECT_EQ(0, allocator.allocated());
-    return;
+    exception_was_thrown = true;
   }
 
-  EXPECT_FALSE("Exception was not thrown");
+  BOOST_TEST(allocator.allocated() == 0);
+  BOOST_TEST(exception_was_thrown);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
+

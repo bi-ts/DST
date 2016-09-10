@@ -1,11 +1,17 @@
 
 cmake_minimum_required(VERSION 3.4)
 
-if(NOT GTEST_FOUND)
-  find_package(GTest REQUIRED)
-endif()
+find_package(Boost 1.61.0)
 
-include_directories(${GTEST_INCLUDE_DIRS})
+if(NOT Boost_FOUND)
+  message(STATUS "Getting Boost...")
+
+  include(get_boost)
+
+  get_boost(1.61.0 015ae4afa6f3e597232bfe1dab949ace) 
+
+  find_package(Boost 1.61.0 REQUIRED)
+endif()
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
   set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")                              
@@ -14,9 +20,15 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
 endif()
 
 add_executable(dst_test 
+  main.cpp
   test_allocator_utility.cpp
   test_counter_allocator.cpp
-  test_global_counter_allocator.cpp)
+  test_global_counter_allocator.cpp
+)
 
-target_link_libraries(dst_test dst ${GTEST_BOTH_LIBRARIES})
+target_include_directories(dst_test PRIVATE "${Boost_INCLUDE_DIRS}")
+
+target_link_libraries(dst_test dst)
+
+add_test(NAME dst_test COMMAND dst_test --log_level=test_suite)
 

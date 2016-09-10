@@ -6,121 +6,125 @@
 
 #include <dst/allocator/counter_allocator.h>
 
-#include <gtest/gtest.h>
+#include <boost/test/unit_test.hpp>
 
 #include <list>
 #include <memory> // std::allocator_traits
 
-TEST(test_counter_allocator, allocate_int)
+BOOST_AUTO_TEST_SUITE(test_counter_allocator)
+
+BOOST_AUTO_TEST_CASE(test_allocate_int)
 {
   dst::counter_allocator<int> allocator;
 
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 0);
 
   int* p_int = allocator.allocate(1);
 
-  EXPECT_EQ(sizeof(int), allocator.allocated());
+  BOOST_TEST(allocator.allocated() == sizeof(int));
 
   int* p_ints = allocator.allocate(10);
 
-  EXPECT_EQ(11 * sizeof(int), allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 11 * sizeof(int));
 
   allocator.deallocate(p_int, 1);
 
-  EXPECT_EQ(10 * sizeof(int), allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 10 * sizeof(int));
 
   allocator.deallocate(p_ints, 10);
 
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 0);
 }
 
-TEST(test_counter_allocator, rebind)
+BOOST_AUTO_TEST_CASE(test_rebind)
 {
   dst::counter_allocator<int> int_allocator;
 
   std::allocator_traits<dst::counter_allocator<int>>::rebind_alloc<double>
     double_allocator(int_allocator);
 
-  EXPECT_EQ(0, int_allocator.allocated());
-  EXPECT_EQ(0, double_allocator.allocated());
+  BOOST_TEST(int_allocator.allocated() == 0);
+  BOOST_TEST(double_allocator.allocated() == 0);
 
   int* p_int = int_allocator.allocate(1);
 
-  EXPECT_EQ(sizeof(int), int_allocator.allocated());
-  EXPECT_EQ(sizeof(int), double_allocator.allocated());
+  BOOST_TEST(int_allocator.allocated() == sizeof(int));
+  BOOST_TEST(double_allocator.allocated() == sizeof(int));
 
   double* p_double = double_allocator.allocate(2);
 
-  EXPECT_EQ(2 * sizeof(double) + sizeof(int), int_allocator.allocated());
-  EXPECT_EQ(2 * sizeof(double) + sizeof(int), double_allocator.allocated());
+  BOOST_TEST(int_allocator.allocated() == 2 * sizeof(double) + sizeof(int));
+  BOOST_TEST(double_allocator.allocated() == 2 * sizeof(double) + sizeof(int));
 
   int_allocator.deallocate(p_int, 1);
 
-  EXPECT_EQ(2 * sizeof(double), int_allocator.allocated());
-  EXPECT_EQ(2 * sizeof(double), double_allocator.allocated());
+  BOOST_TEST(int_allocator.allocated() == 2 * sizeof(double));
+  BOOST_TEST(double_allocator.allocated() == 2 * sizeof(double));
 
   double_allocator.deallocate(p_double, 2);
 
-  EXPECT_EQ(0, int_allocator.allocated());
-  EXPECT_EQ(0, double_allocator.allocated());
+  BOOST_TEST(int_allocator.allocated() == 0);
+  BOOST_TEST(double_allocator.allocated() == 0);
 }
 
-TEST(test_counter_allocator, with_std_list)
+BOOST_AUTO_TEST_CASE(test_with_std_list)
 {
   dst::counter_allocator<int> allocator;
 
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 0);
 
   {
     std::list<int, dst::counter_allocator<int>> l(allocator);
 
     l.assign({1, 2, 3, 4, 5, 6, 7, 8, 9, 0});
 
-    EXPECT_NE(0, allocator.allocated());
+    BOOST_TEST(allocator.allocated() != 0);
   }
 
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 0);
 }
 
-TEST(test_counter_allocator, base_allocator)
+BOOST_AUTO_TEST_CASE(test_base_allocator)
 {
   dst::counter_allocator<int> base_allocator;
   dst::counter_allocator<int, dst::counter_allocator<int>> allocator(
     base_allocator);
 
-  EXPECT_TRUE(allocator.base() == base_allocator);
-  EXPECT_FALSE(allocator.base() == dst::counter_allocator<int>());
+  BOOST_TEST((allocator.base() == base_allocator));
+  BOOST_TEST((allocator.base() != dst::counter_allocator<int>()));
 
-  EXPECT_EQ(0, base_allocator.allocated());
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(base_allocator.allocated() == 0);
+  BOOST_TEST(allocator.allocated() == 0);
 
   int* p_ints = allocator.allocate(10);
 
-  EXPECT_EQ(10 * sizeof(int), base_allocator.allocated());
-  EXPECT_EQ(10 * sizeof(int), allocator.allocated());
+  BOOST_TEST(base_allocator.allocated() == 10 * sizeof(int));
+  BOOST_TEST(allocator.allocated() == 10 * sizeof(int));
 
   allocator.deallocate(p_ints, 10);
 
-  EXPECT_EQ(0, base_allocator.allocated());
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(base_allocator.allocated() == 0);
+  BOOST_TEST(allocator.allocated() == 0);
 }
 
-TEST(test_counter_allocator, void_allocator)
+BOOST_AUTO_TEST_CASE(test_void_allocator)
 {
   dst::counter_allocator<int> allocator;
 
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 0);
 
   std::allocator_traits<dst::counter_allocator<void>>::pointer p_void =
     allocator.allocate(2);
 
-  EXPECT_EQ(2 * sizeof(int), allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 2 * sizeof(int));
 
   allocator.deallocate(
     static_cast<std::allocator_traits<dst::counter_allocator<int>>::pointer>(
       p_void),
     2);
 
-  EXPECT_EQ(0, allocator.allocated());
+  BOOST_TEST(allocator.allocated() == 0);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
 
