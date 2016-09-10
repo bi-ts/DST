@@ -1,0 +1,14 @@
+language: cpp
+os:
+- osx
+compiler:
+- clang
+before_script:
+- brew update
+- brew upgrade cmake
+- cmake --version
+script:
+- mkdir build
+- cd build
+- cmake ..
+- cmake --build .
