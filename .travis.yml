@@ -10,7 +10,7 @@ before_script:
 script:
 - mkdir build
 - cd build
-- cmake ..
+- cmake -G"Xcode" ..
 - cmake --build . --config Release
 - ctest -V -C Release .
 - cmake --build . --config Debug
