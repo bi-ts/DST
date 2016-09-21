@@ -6,7 +6,7 @@ matrix:
       compiler: clang
 before_script:
   - brew update
-  - brew upgrade cmake
+  - brew install cmake
   - cmake --version
 script:
   - mkdir build
