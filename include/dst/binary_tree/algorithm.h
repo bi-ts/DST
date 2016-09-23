@@ -68,6 +68,36 @@ BinaryTreeIterator parent(BinaryTreeIterator position)
 
 template <typename BinaryTreeIterator,
           typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
+BinaryTreeIterator roll_down_left(BinaryTreeIterator root)
+{
+  if (!root)
+    return root;
+
+  while (!leaf(root))
+  {
+    root = !!left(root) ? left(root) : right(root);
+  }
+
+  return root;
+}
+
+template <typename BinaryTreeIterator,
+          typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
+BinaryTreeIterator roll_down_right(BinaryTreeIterator root)
+{
+  if (!root)
+    return root;
+
+  while (!leaf(root))
+  {
+    root = !!right(root) ? right(root) : left(root);
+  }
+
+  return root;
+}
+
+template <typename BinaryTreeIterator,
+          typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
 BinaryTreeIterator root(BinaryTreeIterator position)
 {
   assert(!!position);
@@ -119,36 +149,6 @@ bool topologically_equal(BinaryTreeIteratorA x, BinaryTreeIteratorB y)
 
 template <typename BinaryTreeIterator,
           typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
-BinaryTreeIterator roll_down_left(BinaryTreeIterator root)
-{
-  if (!root)
-    return root;
-
-  while (!leaf(root))
-  {
-    root = !!left(root) ? left(root) : right(root);
-  }
-
-  return root;
-}
-
-template <typename BinaryTreeIterator,
-          typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
-BinaryTreeIterator roll_down_right(BinaryTreeIterator root)
-{
-  if (!root)
-    return root;
-
-  while (!leaf(root))
-  {
-    root = !!right(root) ? right(root) : left(root);
-  }
-
-  return root;
-}
-
-template <typename BinaryTreeIterator,
-          typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
 BinaryTreeIterator successor(BinaryTreeIterator position)
 {
   assert(!!position);
@@ -196,10 +196,10 @@ bool order(BinaryTreeIterator x, BinaryTreeIterator y)
 
   if (!y)
     return !!x;
-  
+
   if (!x)
     return false;
-  
+
   std::vector<BinaryTreeIterator> x_to_root_path;
   std::vector<BinaryTreeIterator> y_to_root_path;
 
@@ -217,8 +217,7 @@ bool order(BinaryTreeIterator x, BinaryTreeIterator y)
 
   auto it_x = x_to_root_path.crbegin(), it_y = y_to_root_path.crbegin();
 
-  for (;
-       it_x != x_to_root_path.crend() && it_y != y_to_root_path.crend();
+  for (; it_x != x_to_root_path.crend() && it_y != y_to_root_path.crend();
        ++it_x, ++it_y)
   {
     if (*it_x != *it_y)
@@ -297,8 +296,7 @@ template <typename BinaryTreeIterator,
 inorder_depth_first_search_iterator<BinaryTreeIterator>
 begin_inorder_depth_first_search(BinaryTreeIterator root)
 {
-  return inorder_depth_first_search_iterator<BinaryTreeIterator>(
-    minimum(root));
+  return inorder_depth_first_search_iterator<BinaryTreeIterator>(minimum(root));
 }
 
 template <typename BinaryTreeIterator,

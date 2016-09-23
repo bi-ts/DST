@@ -24,9 +24,36 @@ BOOST_AUTO_TEST_SUITE(test_binary_tree_algorithm)
 
 BOOST_AUTO_TEST_CASE(test_leaf)
 {
-  BOOST_TEST((leaf(tree.root()) == false));
-  BOOST_TEST(leaf(right(tree.root())) == false);
-  BOOST_TEST(leaf(left(right(tree.root()))) == true);
+  BOOST_TEST(!leaf(tree.root());
+  BOOST_TEST(!leaf(right(tree.root())));
+  BOOST_TEST(leaf(left(right(tree.root()))));
+}
+
+BOOST_AUTO_TEST_CASE(test_maximum)
+{
+  BOOST_TEST(*maximum(tree.root()) == 2);
+}
+
+BOOST_AUTO_TEST_CASE(test_minimum)
+{
+  BOOST_TEST(*minimum(tree.root()) == 3);
+}
+
+BOOST_AUTO_TEST_CASE(test_parent)
+{
+  BOOST_TEST(*parent(left(tree.root())) == 0);
+  BOOST_TEST(*parent(right(tree.root())) == 0);
+  BOOST_TEST(!parent(tree.root()));
+}
+
+BOOST_AUTO_TEST_CASE(test_roll_down_left)
+{
+  BOOST_TEST(*roll_down_left(tree.root()) == 3);
+}
+
+BOOST_AUTO_TEST_CASE(test_roll_down_right)
+{
+  BOOST_TEST(*roll_down_right(tree.root()) == 5);
 }
 
 BOOST_AUTO_TEST_CASE(test_root)
@@ -46,44 +73,45 @@ BOOST_AUTO_TEST_CASE(test_sibling)
 
 BOOST_AUTO_TEST_CASE(test_topologically_equal)
 {
+  // $      |    $
+  // $      0    $
+  // $    /   \  $
+  // $   1     2 $
+  // $  / \   /  $
+  // $ 3   4 5   $
   dst::binary_tree::initializer_tree<int> a({{3, 1, 4}, 0, {5, 2, {}}});
-  dst::binary_tree::initializer_tree<int> b({{{}, 3, 1}, 4, {0, 5, 2}});
-  dst::binary_tree::initializer_tree<int> c({{{}, 3, 1}, 4, {}});
-  dst::binary_tree::initializer_tree<int> d;
-  dst::binary_tree::initializer_tree<int> e;
 
   BOOST_TEST(topologically_equal(tree.root(), a.root()));
-  BOOST_TEST(topologically_equal(tree.root(), b.root()) == false);
-  BOOST_TEST(topologically_equal(tree.root(), c.root()) == false);
-  BOOST_TEST(topologically_equal(tree.root(), d.root()) == false);
+
+  // $    |      $
+  // $    4      $
+  // $  /   \    $
+  // $ 3     5   $
+  // $  \   / \  $
+  // $   1 0   2 $
+  dst::binary_tree::initializer_tree<int> b({{{}, 3, 1}, 4, {0, 5, 2}});
+
+  BOOST_TEST(!topologically_equal(tree.root(), b.root()));
+
+  // $   | $
+  // $   4 $
+  // $  /  $
+  // $ 3   $
+  // $  \  $
+  // $   1 $
+  dst::binary_tree::initializer_tree<int> c({{{}, 3, 1}, 4, {}});
+
+  BOOST_TEST(!topologically_equal(tree.root(), c.root()));
+
+  // $ | $
+  dst::binary_tree::initializer_tree<int> d;
+
+  BOOST_TEST(!topologically_equal(tree.root(), d.root()));
+
+  // $ | $
+  dst::binary_tree::initializer_tree<int> e;
+
   BOOST_TEST(topologically_equal(d.root(), e.root()));
-}
-
-BOOST_AUTO_TEST_CASE(test_parent)
-{
-  BOOST_TEST(*parent(left(tree.root())) == 0);
-  BOOST_TEST(*parent(right(tree.root())) == 0);
-  BOOST_TEST(!parent(tree.root()));
-}
-
-BOOST_AUTO_TEST_CASE(test_minimum)
-{
-  BOOST_TEST(*minimum(tree.root()) == 3);
-}
-
-BOOST_AUTO_TEST_CASE(test_maximum)
-{
-  BOOST_TEST(*maximum(tree.root()) == 2);
-}
-
-BOOST_AUTO_TEST_CASE(test_roll_down_left)
-{
-  BOOST_TEST(*roll_down_left(tree.root()) == 3);
-}
-
-BOOST_AUTO_TEST_CASE(test_roll_down_right)
-{
-  BOOST_TEST(*roll_down_right(tree.root()) == 5);
 }
 
 BOOST_AUTO_TEST_CASE(test_successor)
@@ -165,21 +193,21 @@ BOOST_AUTO_TEST_CASE(test_order)
   BOOST_TEST(order(it_5, it_5) == false);
 }
 
-BOOST_AUTO_TEST_CASE(test_postorder_depth_first_search)
-{
-  std::vector<int> sequence(begin_postorder_depth_first_search(tree.root()),
-                            end_postorder_depth_first_search(tree.nil()));
-
-  BOOST_TEST(sequence == std::vector<int>({3, 4, 1, 5, 2, 0}),
-             boost::test_tools::per_element());
-}
-
 BOOST_AUTO_TEST_CASE(test_inorder_depth_first_search)
 {
   std::vector<int> sequence(begin_inorder_depth_first_search(tree.root()),
                             end_inorder_depth_first_search(tree.nil()));
 
   BOOST_TEST(sequence == std::vector<int>({3, 1, 4, 0, 5, 2}),
+             boost::test_tools::per_element());
+}
+
+BOOST_AUTO_TEST_CASE(test_postorder_depth_first_search)
+{
+  std::vector<int> sequence(begin_postorder_depth_first_search(tree.root()),
+                            end_postorder_depth_first_search(tree.nil()));
+
+  BOOST_TEST(sequence == std::vector<int>({3, 4, 1, 5, 2, 0}),
              boost::test_tools::per_element());
 }
 
