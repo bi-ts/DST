@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_SUITE(test_binary_tree_algorithm)
 
 BOOST_AUTO_TEST_CASE(test_leaf)
 {
-  BOOST_TEST(!leaf(tree.root());
+  BOOST_TEST(!leaf(tree.root()));
   BOOST_TEST(!leaf(right(tree.root())));
   BOOST_TEST(leaf(left(right(tree.root()))));
 }
