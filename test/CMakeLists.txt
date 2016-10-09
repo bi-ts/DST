@@ -25,6 +25,7 @@ add_executable(dst_test
   test_counter_allocator.cpp
   test_global_counter_allocator.cpp
   binary_tree/test_algorithm.cpp
+  binary_tree/test_write_graphviz.cpp
 )
 
 target_include_directories(dst_test PRIVATE "${Boost_INCLUDE_DIRS}")
