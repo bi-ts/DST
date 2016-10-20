@@ -4,7 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
 
-#include <dst/binary_tree/initializer_tree.h>
+#include <dst/binary_tree/tree.h>
 #include <dst/binary_tree/algorithm.h>
 
 #include <boost/test/unit_test.hpp>
@@ -17,7 +17,7 @@ namespace
 // $   1     2 $
 // $  / \   /  $
 // $ 3   4 5   $
-const dst::binary_tree::initializer_tree<int> tree({{3, 1, 4}, 0, {5, 2, {}}});
+const dst::binary_tree::tree<int> tree({{3, 1, 4}, 0, {5, 2, {}}});
 }
 
 BOOST_AUTO_TEST_SUITE(test_binary_tree_algorithm)
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(test_topologically_equal)
   // $   1     2 $
   // $  / \   /  $
   // $ 3   4 5   $
-  dst::binary_tree::initializer_tree<int> a({{3, 1, 4}, 0, {5, 2, {}}});
+  dst::binary_tree::tree<int> a({{3, 1, 4}, 0, {5, 2, {}}});
 
   BOOST_TEST(topologically_equal(tree.root(), a.root()));
 
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(test_topologically_equal)
   // $ 3     5   $
   // $  \   / \  $
   // $   1 0   2 $
-  dst::binary_tree::initializer_tree<int> b({{{}, 3, 1}, 4, {0, 5, 2}});
+  dst::binary_tree::tree<int> b({{{}, 3, 1}, 4, {0, 5, 2}});
 
   BOOST_TEST(!topologically_equal(tree.root(), b.root()));
 
@@ -99,17 +99,17 @@ BOOST_AUTO_TEST_CASE(test_topologically_equal)
   // $ 3   $
   // $  \  $
   // $   1 $
-  dst::binary_tree::initializer_tree<int> c({{{}, 3, 1}, 4, {}});
+  dst::binary_tree::tree<int> c({{{}, 3, 1}, 4, {}});
 
   BOOST_TEST(!topologically_equal(tree.root(), c.root()));
 
   // $ | $
-  dst::binary_tree::initializer_tree<int> d;
+  dst::binary_tree::tree<int> d;
 
   BOOST_TEST(!topologically_equal(tree.root(), d.root()));
 
   // $ | $
-  dst::binary_tree::initializer_tree<int> e;
+  dst::binary_tree::tree<int> e;
 
   BOOST_TEST(topologically_equal(d.root(), e.root()));
 }

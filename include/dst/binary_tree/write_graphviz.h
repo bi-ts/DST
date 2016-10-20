@@ -17,8 +17,9 @@ namespace dst
 namespace binary_tree
 {
 
-template <typename BinaryTreeIterator,
-          typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
+template <
+  typename BinaryTreeIterator,
+  typename = enable_for_binary_tree_children_iterator<BinaryTreeIterator>>
 void write_graphviz(std::ostream& out, BinaryTreeIterator position)
 {
   out << "digraph G {" << std::endl;
@@ -54,4 +55,3 @@ void write_graphviz(std::ostream& out, BinaryTreeIterator position)
 } // binary_tree
 
 } // dst
-

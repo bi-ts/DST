@@ -8,8 +8,6 @@
 
 #include "iterator_facade.h"
 
-#include "algorithm.h"
-
 #include <memory> // std::shared_ptr
 
 namespace dst
@@ -24,14 +22,15 @@ private:
   class node;
 
 public:
-  class const_tree_iterator : public iterator_facade<const_tree_iterator,
-                                                     binary_tree_iterator_tag,
-                                                     const T>
+  class const_tree_iterator
+    : public iterator_facade<const_tree_iterator,
+                             binary_tree_children_iterator_tag,
+                             const T>
   {
   public:
     friend class initializer_tree;
     friend class iterator_facade<const_tree_iterator,
-                                 binary_tree_iterator_tag,
+                                 binary_tree_children_iterator_tag,
                                  const T>;
 
   public:
@@ -62,11 +61,6 @@ public:
       return p_node_->value_;
     }
 
-    void move_to_parent()
-    {
-      p_node_ = p_node_->p_parent_;
-    }
-
     void move_left()
     {
       p_node_ = p_node_->p_left_.get();
@@ -89,23 +83,16 @@ private:
 
   public:
     explicit node(const T& value,
-                  std::shared_ptr<node>&& p_left = nullptr,
-                  std::shared_ptr<node>&& p_right = nullptr)
+                  const std::shared_ptr<node>& p_left = nullptr,
+                  const std::shared_ptr<node>& p_right = nullptr)
     : value_(value)
-    , p_parent_(nullptr)
-    , p_left_(std::move(p_left))
-    , p_right_(std::move(p_right))
+    , p_left_(p_left)
+    , p_right_(p_right)
     {
-      if (p_left_ != nullptr)
-        p_left_->p_parent_ = this;
-
-      if (p_right_ != nullptr)
-        p_right_->p_parent_ = this;
     }
 
   private:
     T value_;
-    node* p_parent_;
     std::shared_ptr<node> p_left_;
     std::shared_ptr<node> p_right_;
   };
@@ -116,12 +103,8 @@ public:
   using value_type = T;
   using reference = const T&;
   using const_reference = const T&;
-  using difference_type =
-    typename std::iterator_traits<tree_iterator>::difference_type;
+  using difference_type = typename tree_iterator::difference_type;
   using size_type = typename std::make_unsigned<difference_type>::type;
-  using const_iterator =
-    inorder_depth_first_search_iterator<const_tree_iterator>;
-  using iterator = const_iterator;
 
 public:
   initializer_tree(const T& v)
@@ -130,10 +113,10 @@ public:
   {
   }
 
-  initializer_tree(initializer_tree&& left,
+  initializer_tree(const initializer_tree& left,
                    const T& v,
-                   initializer_tree&& right)
-  : p_root_(new node(v, std::move(left.p_root_), std::move(right.p_root_)))
+                   const initializer_tree& right)
+  : p_root_(new node(v, left.p_root_, right.p_root_))
   , size_(1 + left.size_ + right.size_)
   {
   }
@@ -154,24 +137,14 @@ public:
     return const_tree_iterator(nullptr);
   }
 
-  const_iterator begin() const
-  {
-    return begin_inorder_depth_first_search(root());
-  }
-
-  const_iterator end() const
-  {
-    return end_inorder_depth_first_search(nil());
-  }
-
   size_type size() const
   {
-    return p_root_ != nullptr ? size_ : 0;
+    return size_;
   }
 
   bool empty() const
   {
-    return p_root_ == nullptr;
+    return size_ == 0;
   }
 
 private:
@@ -182,4 +155,3 @@ private:
 } // binary_tree
 
 } // dst
-
