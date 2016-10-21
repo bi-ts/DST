@@ -17,26 +17,29 @@ namespace
 // $   1     2 $
 // $  / \   /  $
 // $ 3   4 5   $
-const dst::binary_tree::tree<int> tree({{3, 1, 4}, 0, {5, 2, {}}});
+const dst::binary_tree::initializer_tree<int>
+  init_tree({{3, 1, 4}, 0, {5, 2, {}}});
+
+const dst::binary_tree::tree<int> tree(init_tree);
 }
 
 BOOST_AUTO_TEST_SUITE(test_binary_tree_algorithm)
 
 BOOST_AUTO_TEST_CASE(test_leaf)
 {
-  BOOST_TEST(!leaf(tree.root()));
-  BOOST_TEST(!leaf(right(tree.root())));
-  BOOST_TEST(leaf(left(right(tree.root()))));
+  BOOST_TEST(!leaf(init_tree.root()));
+  BOOST_TEST(!leaf(right(init_tree.root())));
+  BOOST_TEST(leaf(left(right(init_tree.root()))));
 }
 
 BOOST_AUTO_TEST_CASE(test_maximum)
 {
-  BOOST_TEST(*maximum(tree.root()) == 2);
+  BOOST_TEST(*maximum(init_tree.root()) == 2);
 }
 
 BOOST_AUTO_TEST_CASE(test_minimum)
 {
-  BOOST_TEST(*minimum(tree.root()) == 3);
+  BOOST_TEST(*minimum(init_tree.root()) == 3);
 }
 
 BOOST_AUTO_TEST_CASE(test_parent)
@@ -48,12 +51,12 @@ BOOST_AUTO_TEST_CASE(test_parent)
 
 BOOST_AUTO_TEST_CASE(test_roll_down_left)
 {
-  BOOST_TEST(*roll_down_left(tree.root()) == 3);
+  BOOST_TEST(*roll_down_left(init_tree.root()) == 3);
 }
 
 BOOST_AUTO_TEST_CASE(test_roll_down_right)
 {
-  BOOST_TEST(*roll_down_right(tree.root()) == 5);
+  BOOST_TEST(*roll_down_right(init_tree.root()) == 5);
 }
 
 BOOST_AUTO_TEST_CASE(test_root)
@@ -79,9 +82,9 @@ BOOST_AUTO_TEST_CASE(test_topologically_equal)
   // $   1     2 $
   // $  / \   /  $
   // $ 3   4 5   $
-  dst::binary_tree::tree<int> a({{3, 1, 4}, 0, {5, 2, {}}});
+  dst::binary_tree::initializer_tree<int> a({{3, 1, 4}, 0, {5, 2, {}}});
 
-  BOOST_TEST(topologically_equal(tree.root(), a.root()));
+  BOOST_TEST(topologically_equal(init_tree.root(), a.root()));
 
   // $    |      $
   // $    4      $
@@ -89,9 +92,9 @@ BOOST_AUTO_TEST_CASE(test_topologically_equal)
   // $ 3     5   $
   // $  \   / \  $
   // $   1 0   2 $
-  dst::binary_tree::tree<int> b({{{}, 3, 1}, 4, {0, 5, 2}});
+  dst::binary_tree::initializer_tree<int> b({{{}, 3, 1}, 4, {0, 5, 2}});
 
-  BOOST_TEST(!topologically_equal(tree.root(), b.root()));
+  BOOST_TEST(!topologically_equal(init_tree.root(), b.root()));
 
   // $   | $
   // $   4 $
@@ -99,17 +102,17 @@ BOOST_AUTO_TEST_CASE(test_topologically_equal)
   // $ 3   $
   // $  \  $
   // $   1 $
-  dst::binary_tree::tree<int> c({{{}, 3, 1}, 4, {}});
+  dst::binary_tree::initializer_tree<int> c({{{}, 3, 1}, 4, {}});
 
-  BOOST_TEST(!topologically_equal(tree.root(), c.root()));
-
-  // $ | $
-  dst::binary_tree::tree<int> d;
-
-  BOOST_TEST(!topologically_equal(tree.root(), d.root()));
+  BOOST_TEST(!topologically_equal(init_tree.root(), c.root()));
 
   // $ | $
-  dst::binary_tree::tree<int> e;
+  dst::binary_tree::initializer_tree<int> d;
+
+  BOOST_TEST(!topologically_equal(init_tree.root(), d.root()));
+
+  // $ | $
+  dst::binary_tree::initializer_tree<int> e;
 
   BOOST_TEST(topologically_equal(d.root(), e.root()));
 }

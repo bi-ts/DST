@@ -16,18 +16,20 @@
 namespace dst
 {
 
-template <typename BinaryTreeIterator,
-          typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
-bool leaf(BinaryTreeIterator position)
+template <typename BinaryTreeChildrenIterator,
+          typename = enable_for_binary_tree_children_iterator<
+            BinaryTreeChildrenIterator>>
+bool leaf(BinaryTreeChildrenIterator position)
 {
   assert(!!position);
 
   return !left(position) && !right(position);
 }
 
-template <typename BinaryTreeIterator,
-          typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
-BinaryTreeIterator maximum(BinaryTreeIterator root)
+template <typename BinaryTreeChildrenIterator,
+          typename = enable_for_binary_tree_children_iterator<
+            BinaryTreeChildrenIterator>>
+BinaryTreeChildrenIterator maximum(BinaryTreeChildrenIterator root)
 {
   if (!!root)
   {
@@ -40,9 +42,10 @@ BinaryTreeIterator maximum(BinaryTreeIterator root)
   return root;
 }
 
-template <typename BinaryTreeIterator,
-          typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
-BinaryTreeIterator minimum(BinaryTreeIterator root)
+template <typename BinaryTreeChildrenIterator,
+          typename = enable_for_binary_tree_children_iterator<
+            BinaryTreeChildrenIterator>>
+BinaryTreeChildrenIterator minimum(BinaryTreeChildrenIterator root)
 {
   if (!!root)
   {
@@ -66,9 +69,10 @@ BinaryTreeIterator parent(BinaryTreeIterator position)
   return ++p;
 }
 
-template <typename BinaryTreeIterator,
-          typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
-BinaryTreeIterator roll_down_left(BinaryTreeIterator root)
+template <typename BinaryTreeChildrenIterator,
+          typename = enable_for_binary_tree_children_iterator<
+            BinaryTreeChildrenIterator>>
+BinaryTreeChildrenIterator roll_down_left(BinaryTreeChildrenIterator root)
 {
   if (!root)
     return root;
@@ -81,9 +85,10 @@ BinaryTreeIterator roll_down_left(BinaryTreeIterator root)
   return root;
 }
 
-template <typename BinaryTreeIterator,
-          typename = enable_for_binary_tree_iterator<BinaryTreeIterator>>
-BinaryTreeIterator roll_down_right(BinaryTreeIterator root)
+template <typename BinaryTreeChildrenIterator,
+          typename = enable_for_binary_tree_children_iterator<
+            BinaryTreeChildrenIterator>>
+BinaryTreeChildrenIterator roll_down_right(BinaryTreeChildrenIterator root)
 {
   if (!root)
     return root;
@@ -131,11 +136,15 @@ BinaryTreeIterator sibling(BinaryTreeIterator position)
   return left(p);
 }
 
-template <typename BinaryTreeIteratorA,
-          typename BinaryTreeIteratorB,
-          typename = enable_for_binary_tree_iterator<BinaryTreeIteratorA>,
-          typename = enable_for_binary_tree_iterator<BinaryTreeIteratorB>>
-bool topologically_equal(BinaryTreeIteratorA x, BinaryTreeIteratorB y)
+template <
+  typename BinaryTreeChildrenIteratorA,
+  typename BinaryTreeChildrenIteratorB,
+  typename =
+    enable_for_binary_tree_children_iterator<BinaryTreeChildrenIteratorA>,
+  typename =
+    enable_for_binary_tree_children_iterator<BinaryTreeChildrenIteratorB>>
+bool topologically_equal(BinaryTreeChildrenIteratorA x,
+                         BinaryTreeChildrenIteratorB y)
 {
   if (!x && !y)
     return true;
@@ -386,4 +395,3 @@ end_postorder_depth_first_search(BinaryTreeIterator last)
 }
 
 } // dst
-
