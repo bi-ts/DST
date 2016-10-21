@@ -17,14 +17,14 @@ namespace dst
 namespace binary_tree
 {
 
-template <
-  typename BinaryTreeIterator,
-  typename = enable_for_binary_tree_children_iterator<BinaryTreeIterator>>
-void write_graphviz(std::ostream& out, BinaryTreeIterator position)
+template <typename BinaryTreeChildrenIterator,
+          typename = enable_for_binary_tree_children_iterator<
+            BinaryTreeChildrenIterator>>
+void write_graphviz(std::ostream& out, BinaryTreeChildrenIterator position)
 {
   out << "digraph G {" << std::endl;
 
-  std::queue<BinaryTreeIterator> q;
+  std::queue<BinaryTreeChildrenIterator> q;
   q.push(position);
 
   int idx = 0;
