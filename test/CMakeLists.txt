@@ -21,6 +21,7 @@ endif()
 
 add_executable(dst_test 
   binary_tree/test_algorithm.cpp
+  binary_tree/test_initializer_tree.cpp
   binary_tree/test_write_graphviz.cpp
   binary_tree/tools/fibonacci_trees.cpp
   binary_tree/tools/fibonacci_trees.h
