@@ -8,8 +8,8 @@
 
 #include "iterator_facade.h"
 
-#include <queue>
 #include <ostream>
+#include <queue>
 
 namespace dst
 {
@@ -18,14 +18,20 @@ namespace binary_tree
 {
 
 template <typename BinaryTreeChildrenIterator,
+          typename F,
+          typename ForwardIterator = BinaryTreeChildrenIterator*,
           typename = enable_for_binary_tree_children_iterator<
             BinaryTreeChildrenIterator>>
-void write_graphviz(std::ostream& out, BinaryTreeChildrenIterator position)
+void write_graphviz(std::ostream& out,
+                    BinaryTreeChildrenIterator x,
+                    const F& f,
+                    ForwardIterator from = nullptr,
+                    ForwardIterator to = nullptr)
 {
   out << "digraph G {" << std::endl;
 
   std::queue<BinaryTreeChildrenIterator> q;
-  q.push(position);
+  q.push(x);
 
   int idx = 0;
   while (!q.empty())
@@ -33,7 +39,15 @@ void write_graphviz(std::ostream& out, BinaryTreeChildrenIterator position)
     const auto x = q.front();
     q.pop();
 
-    out << "\t" << idx << " [label=\"" << *x << "\"]" << std::endl;
+    out << "\t" << idx << " [label=\"" << f(x) << "\"";
+
+    if (std::find(from, to, x) != to)
+    {
+      out << ", color=red";
+    }
+
+    out << "]" << std::endl;
+
     if (!!left(x))
     {
       q.push(left(x));
@@ -50,6 +64,24 @@ void write_graphviz(std::ostream& out, BinaryTreeChildrenIterator position)
   }
 
   out << "}" << std::endl;
+}
+
+template <typename BinaryTreeChildrenIterator,
+          typename = enable_for_binary_tree_children_iterator<
+            BinaryTreeChildrenIterator>>
+void write_graphviz(
+  std::ostream& out,
+  BinaryTreeChildrenIterator x,
+  BinaryTreeChildrenIterator highlight = BinaryTreeChildrenIterator())
+{
+  write_graphviz(out,
+                 x,
+                 [](BinaryTreeChildrenIterator x)
+                 {
+                   return *x;
+                 },
+                 &highlight,
+                 &highlight + 1);
 }
 
 } // binary_tree
