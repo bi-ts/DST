@@ -10,10 +10,13 @@
 
 #include <vector>
 
-namespace dst
+namespace dst_test
 {
 
-std::vector<binary_tree::initializer_tree<int>>
-generate_fibonacci_trees(std::size_t h);
+std::vector<dst::binary_tree::initializer_tree<int>>
+generate_balanced_trees(std::size_t h);
 
-} // dst
+std::size_t number_of_balanced_trees(std::size_t h);
+
+} // dst_test
+

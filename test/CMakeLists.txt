@@ -21,10 +21,11 @@ endif()
 
 add_executable(dst_test 
   binary_tree/test_algorithm.cpp
+  binary_tree/test_avl.cpp
   binary_tree/test_initializer_tree.cpp
   binary_tree/test_write_graphviz.cpp
-  binary_tree/tools/fibonacci_trees.cpp
-  binary_tree/tools/fibonacci_trees.h
+  binary_tree/tools/trees_generator.cpp
+  binary_tree/tools/trees_generator.h
   main.cpp
   test_allocator_utility.cpp
   test_counter_allocator.cpp
