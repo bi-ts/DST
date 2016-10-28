@@ -420,30 +420,24 @@ protected:
   {
     assert(!!position);
 
-    if (!left(position) || !right(position))
-    {
-      const auto p_x = position.p_node_;
+    assert(!left(position) || !right(position));
 
-      const auto p_x_parent = p_x->p_parent;
+    const auto p_x = position.p_node_;
 
-      assert((p_x_parent->p_left == p_x) != (p_x_parent->p_right == p_x));
+    const auto p_x_parent = p_x->p_parent;
 
-      const auto p_x_child =
-        p_x->p_left != p_nil_ ? p_x->p_left : p_x->p_right;
+    assert((p_x_parent->p_left == p_x) != (p_x_parent->p_right == p_x));
 
-      if (p_x_parent->p_left == p_x)
-        p_x_parent->p_left = p_x_child;
-      else
-        p_x_parent->p_right = p_x_child;
+    const auto p_x_child = p_x->p_left != p_nil_ ? p_x->p_left : p_x->p_right;
 
-      p_x_child->p_parent = p_x_parent;
-
-      delete_node_(p_x);
-    }
+    if (p_x_parent->p_left == p_x)
+      p_x_parent->p_left = p_x_child;
     else
-    {
-      erase(position, successor(position));
-    }
+      p_x_parent->p_right = p_x_child;
+
+    p_x_child->p_parent = p_x_parent;
+
+    delete_node_(p_x);
   }
 
   void clear()
