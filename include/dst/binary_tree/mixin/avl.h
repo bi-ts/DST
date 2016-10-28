@@ -97,7 +97,7 @@ protected:
   }
 
 public:
-  static std::int8_t balance_factor(const_tree_iterator x)
+  static int balance_factor(const_tree_iterator x)
   {
     return base::metadata(x).first();
   }
