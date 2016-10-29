@@ -55,9 +55,8 @@ private:
   };
 
   template <typename U>
-  class tree_iterator_base : public iterator_facade<tree_iterator_base<U>,
-                                                    binary_tree_iterator_tag,
-                                                    U>
+  class tree_iterator_base
+    : public iterator_facade<tree_iterator_base<U>, binary_tree_iterator_tag, U>
   {
   public:
     friend class binary;
@@ -374,8 +373,7 @@ protected:
 
   void erase(const_tree_iterator position, const_tree_iterator hint)
   {
-    // Sometimes this is not true! investigate (avl tree rebalancing)!
-    // assert(!!position && !!left(position) && !!right(position));
+    assert(!!position && !!left(position) && !!right(position));
     assert(!!hint && (!left(hint) || !right(hint)));
     assert(successor(position) == hint || predecessor(position) == hint);
 
@@ -495,8 +493,7 @@ protected:
   }
 
   template <typename U>
-  static tree_iterator_base<U>
-  root_from_nil(tree_iterator_base<U> nil_position)
+  static tree_iterator_base<U> root_from_nil(tree_iterator_base<U> nil_position)
   {
     assert(!nil_position);
 

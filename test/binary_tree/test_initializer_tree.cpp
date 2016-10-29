@@ -4,9 +4,15 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
 
+#include "tools/trees_generator.h"
+
+#include <dst/binary_tree/algorithm.h>
 #include <dst/binary_tree/initializer_tree.h>
+#include <dst/binary_tree/write_graphviz.h>
 
 #include <boost/test/unit_test.hpp>
+
+#include <iostream>
 
 BOOST_AUTO_TEST_SUITE(test_binary_tree_initializer_tree)
 
@@ -34,6 +40,34 @@ BOOST_AUTO_TEST_CASE(test_initializer_tree_construction)
 
   BOOST_TEST((left(left(left(tree.root()))) == tree.nil()));
   BOOST_TEST((right(left(left(tree.root()))) == tree.nil()));
+}
+
+BOOST_AUTO_TEST_CASE(test_generate_fibonacci_tree)
+{
+  // $            5       $
+  // $          /   \     $
+  // $        4       3   $
+  // $      /   \    / \  $
+  // $     3     2  2   1 $
+  // $    / \   /  /      $
+  // $   2   1 1  1       $
+  // $  /                 $
+  // $ 1                  $
+  const dst::binary_tree::initializer_tree<int> fibonacci_tree(
+    {{{{1, 2, {}}, 3, 1}, 4, {1, 2, {}}}, 5, {{1, 2, {}}, 3, 1}});
+
+  const auto generated_tree = dst_test::generate_fibonacci_tree(5);
+
+  const auto is_fibonacci_tree =
+    topologically_equal(generated_tree.root(), fibonacci_tree.root());
+
+  if (!is_fibonacci_tree)
+  {
+    std::cout << "Not a Fibonacci tree:" << std::endl;
+    dst::binary_tree::write_graphviz(std::cout, generated_tree.root());
+  }
+
+  BOOST_TEST(is_fibonacci_tree);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
 
+#include "tools/avl_tree_invariant.h"
 #include "tools/trees_generator.h"
 
 #include <dst/allocator/global_counter_allocator.h>
@@ -52,6 +53,7 @@ BOOST_AUTO_TEST_CASE(load_test_insert)
 {
   const auto hight = 4;
 
+  const auto fib_tree = generate_fibonacci_tree(hight);
   const auto trees = generate_balanced_trees(hight);
 
   BOOST_TEST(trees.size() == number_of_balanced_trees(hight));
@@ -60,9 +62,70 @@ BOOST_AUTO_TEST_CASE(load_test_insert)
   {
     BOOST_TEST(avl_tree::allocator_type::allocated() == 0);
 
-    auto tree = init_avl_tree(t);
+    auto tree = init_avl_tree({t, hight + 1, fib_tree});
 
-    BOOST_TEST(topologically_equal(t.root(), tree.root()));
+    BOOST_TEST(topologically_equal(t.root(), left(tree.root())));
+    BOOST_TEST(dst_test::avl_invariant_holds(tree));
+
+    for (std::size_t i = 0; i < t.size(); ++i)
+    {
+      auto it1 = tree.begin();
+      std::advance(it1, i);
+
+      if (!left(it1.base()))
+      {
+        auto tree_copy = tree;
+
+        auto it = tree_copy.begin();
+        std::advance(it, i);
+
+        tree_copy.insert_left(it.base(), 0);
+
+        const auto invariant_holds = dst_test::avl_invariant_holds(tree_copy);
+
+        if (!invariant_holds)
+        {
+          auto it = tree.begin();
+          std::advance(it, i);
+          const auto x = it.base();
+
+          std::cout << "Preceding buggy `insert_left` operation:" << std::endl;
+          dst::binary_tree::write_graphviz(
+            std::cout, tree.root(), &avl_tree::balance_factor, &x, &x + 1);
+
+          BOOST_TEST(invariant_holds);
+
+          return;
+        }
+      }
+
+      if (!right(it1.base()))
+      {
+        auto tree_copy = tree;
+
+        auto it = tree_copy.begin();
+        std::advance(it, i);
+
+        tree_copy.insert_right(it.base(), 0);
+
+        const auto invariant_holds = dst_test::avl_invariant_holds(tree_copy);
+
+        if (!invariant_holds)
+        {
+          auto it = tree.begin();
+          std::advance(it, i);
+          const auto x = it.base();
+
+          std::cout << "Preceding buggy `insert_right` operation:" << std::endl;
+          dst::binary_tree::write_graphviz(
+            std::cout, tree.root(), &avl_tree::balance_factor, &x, &x + 1);
+
+          BOOST_TEST(invariant_holds);
+
+          return;
+        }
+      }
+    }
   }
 
   BOOST_TEST(avl_tree::allocator_type::allocated() == 0);
@@ -72,6 +135,7 @@ BOOST_AUTO_TEST_CASE(load_test_erase)
 {
   const auto hight = 4;
 
+  const auto fib_tree = generate_fibonacci_tree(hight);
   const auto trees = generate_balanced_trees(hight);
 
   BOOST_TEST(trees.size() == number_of_balanced_trees(hight));
@@ -80,9 +144,43 @@ BOOST_AUTO_TEST_CASE(load_test_erase)
   {
     BOOST_TEST(avl_tree::allocator_type::allocated() == 0);
 
-    auto tree = init_avl_tree(t);
+    auto tree = init_avl_tree({t, hight + 1, fib_tree});
 
-    BOOST_TEST(topologically_equal(t.root(), tree.root()));
+    BOOST_TEST(topologically_equal(t.root(), left(tree.root())));
+    BOOST_TEST(dst_test::avl_invariant_holds(tree));
+
+    for (std::size_t i = 0; i < t.size(); ++i)
+    {
+      auto it1 = tree.begin();
+      std::advance(it1, i);
+
+      if (!!left(it1.base()) && !!right(it1.base()))
+        continue;
+
+      auto tree_copy = tree;
+
+      auto it = tree_copy.begin();
+      std::advance(it, i);
+
+      tree_copy.erase(it.base());
+
+      const auto invariant_holds = dst_test::avl_invariant_holds(tree_copy);
+
+      if (!invariant_holds)
+      {
+        auto it = tree.begin();
+        std::advance(it, i);
+        const auto x = it.base();
+
+        std::cout << "Preceding buggy `erase` operation:" << std::endl;
+        dst::binary_tree::write_graphviz(
+          std::cout, tree.root(), &avl_tree::balance_factor, &x, &x + 1);
+
+        BOOST_TEST(invariant_holds);
+
+        return;
+      }
+    }
   }
 
   BOOST_TEST(avl_tree::allocator_type::allocated() == 0);

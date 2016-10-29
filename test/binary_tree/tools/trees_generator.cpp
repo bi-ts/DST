@@ -43,6 +43,28 @@ trees_container generate_balanced_trees_(const trees_container& trees_h_minus_2,
 }
 } // dst_test
 
+dst::binary_tree::initializer_tree<int>
+dst_test::generate_fibonacci_tree(std::size_t h)
+{
+
+  if (h == 0)
+    return {};
+
+  if (h == 1)
+    return {1};
+
+  dst::binary_tree::initializer_tree<int> tree_left = {1};
+  dst::binary_tree::initializer_tree<int> tree_right = {};
+
+  for (int i = 1; i != h; ++i)
+  {
+    tree_right = {tree_left, i + 1, tree_right};
+    std::swap(tree_left, tree_right);
+  }
+
+  return tree_left;
+}
+
 std::vector<dst::binary_tree::initializer_tree<int>>
 dst_test::generate_balanced_trees(std::size_t h)
 {

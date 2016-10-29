@@ -61,7 +61,7 @@ protected:
   {
     const auto x = base::emplace_left(position, std::forward<Args>(args)...);
 
-    after_insertion(x);
+    after_insertion(parent(x), true);
 
     return x;
   }
@@ -71,23 +71,29 @@ protected:
   {
     const auto x = base::emplace_right(position, std::forward<Args>(args)...);
 
-    after_insertion(x);
+    after_insertion(parent(x), false);
 
     return x;
   }
 
   void erase(const_tree_iterator position, const_tree_iterator hint)
   {
-    before_erasing(hint);
+    const auto p = parent(hint);
+    const auto left_erasing = !!p && left(p) == hint;
 
     base::erase(position, hint);
+
+    after_erasing(p, left_erasing);
   }
 
   void erase(const_tree_iterator position)
   {
-    before_erasing(position);
+    const auto p = parent(position);
+    const auto left_erasing = !!p && left(p) == position;
 
     base::erase(position);
+
+    after_erasing(p, left_erasing);
   }
 
   static auto metadata(const_tree_iterator x)
@@ -108,38 +114,43 @@ private:
     return base::metadata(x).first();
   }
 
-  void after_insertion(const_tree_iterator x)
+  void after_insertion(const_tree_iterator x, bool left_insertion)
   {
-    auto n = x;
-    auto p = parent(n);
-
-    while (!!p)
+    while (!!x)
     {
-      if (rebalance(p, n))
+      if (left_insertion)
+        --bf(x);
+      else
+        ++bf(x);
+
+      bool height_changed = true;
+      std::tie(x, height_changed) = rebalance(x);
+
+      if (height_changed)
         break;
 
-      if (bf(p) == 0)
-        break;
-
-      n = p;
-      p = parent(n);
+      left_insertion = !!parent(x) && left(parent(x)) == x;
+      x = parent(x);
     }
   }
 
-  void before_erasing(const_tree_iterator x)
+  void after_erasing(const_tree_iterator x, bool left_erasing)
   {
-    auto p = parent(x);
-
-    while (!!p)
+    while (!!x)
     {
-      if (rebalance(p, sibling(x)))
+      if (left_erasing)
+        ++bf(x);
+      else
+        --bf(x);
+
+      bool height_changed = true;
+      std::tie(x, height_changed) = rebalance(x);
+
+      if (!height_changed)
         break;
 
-      if (bf(p) != 0)
-        break;
-
-      x = p;
-      p = parent(x);
+      left_erasing = !!parent(x) && left(parent(x)) == x;
+      x = parent(x);
     }
   }
 
@@ -177,68 +188,56 @@ private:
     return y;
   }
 
-  bool rebalance(const_tree_iterator p, const_tree_iterator n)
+  std::pair<const_tree_iterator, bool> rebalance(const_tree_iterator x)
   {
-    assert(!!p);
-    assert(left(p) == n || right(p) == n);
+    assert(!!x);
 
-    if (n == left(p))
+    if (bf(x) == 2)
     {
-      assert(n == left(p));
+      auto y = right(x);
 
-      assert(bf(p) >= -1 && bf(p) <= 1);
+      assert(!!y);
 
-      --bf(p);
+      bool hight_changed = bf(y) != 0;
 
-      assert(bf(p) >= -2 && bf(p) <= 0);
-
-      if (bf(p) == -2)
+      if (bf(y) == -1)
       {
-        if (bf(n) == 1)
-        {
-          n = rotate_left(n);
+        y = rotate_right(y);
 
-          assert(bf(n) >= -2 && bf(n) <= 0);
-        }
-
-        p = rotate_right(p);
-
-        assert(bf(p) >= -1 && bf(p) <= 1);
-
-        return true;
+        assert(bf(y) >= 0 && bf(y) <= 2);
       }
+
+      x = rotate_left(x);
+
+      assert(bf(x) >= -1 && bf(x) <= 0);
+
+      return std::make_pair(x, hight_changed);
     }
-    else
+    else if (bf(x) == -2)
     {
-      assert(n == right(p));
+      auto y = left(x);
 
-      assert(bf(p) >= -1 && bf(p) <= 1);
+      assert(!!y);
 
-      ++bf(p);
+      bool hight_changed = bf(y) != 0;
 
-      assert(bf(p) >= 0 && bf(p) <= 2);
-
-      if (bf(p) == 2)
+      if (bf(y) == 1)
       {
-        if (bf(n) == -1)
-        {
-          n = rotate_right(n);
+        y = rotate_left(y);
 
-          assert(bf(n) >= 0 && bf(n) <= 2);
-        }
-
-        p = rotate_left(p);
-
-        assert(bf(p) >= -1 && bf(p) <= 1);
-
-        return true;
+        assert(bf(y) >= -2 && bf(y) <= 0);
       }
+
+      x = rotate_right(x);
+
+      assert(bf(x) >= 0 && bf(x) <= 1);
+
+      return std::make_pair(x, hight_changed);
     }
 
-    return false;
+    return std::make_pair(x, bf(x) == 0);
   }
 };
-
 } // mixin
 
 class AVL
@@ -254,4 +253,3 @@ public:
 } // binary_tree
 
 } // dst
-
