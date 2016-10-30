@@ -475,21 +475,21 @@ protected:
   {
   }
 
-  void erase(const_tree_iterator position, const_tree_iterator hint)
+  void erase(const_tree_iterator position, const_tree_iterator sub)
   {
     unmark(position, marking_flag<Flag>());
 
-    if (marked(hint, marking_flag<Flag>()))
+    if (marked(sub, marking_flag<Flag>()))
     {
-      unmark(hint, marking_flag<Flag>());
+      unmark(sub, marking_flag<Flag>());
 
-      base::erase(position, hint);
+      base::erase(position, sub);
 
-      mark(hint, marking_flag<Flag>());
+      mark(sub, marking_flag<Flag>());
     }
     else
     {
-      base::erase(position, hint);
+      base::erase(position, sub);
     }
   }
 

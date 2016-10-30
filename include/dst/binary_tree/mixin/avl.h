@@ -76,12 +76,15 @@ protected:
     return x;
   }
 
-  void erase(const_tree_iterator position, const_tree_iterator hint)
+  void erase(const_tree_iterator position, const_tree_iterator sub)
   {
-    const auto p = parent(hint);
-    const auto left_erasing = !!p && left(p) == hint;
+    assert(!!parent(sub));
 
-    base::erase(position, hint);
+    const auto sub_parent = parent(sub);
+    const auto left_erasing = left(sub_parent) == sub;
+    const auto p = sub_parent == position ? sub : sub_parent;
+
+    base::erase(position, sub);
 
     after_erasing(p, left_erasing);
   }

@@ -371,14 +371,14 @@ protected:
     return tree_iterator(p_node->p_right);
   }
 
-  void erase(const_tree_iterator position, const_tree_iterator hint)
+  void erase(const_tree_iterator position, const_tree_iterator sub)
   {
     assert(!!position && !!left(position) && !!right(position));
-    assert(!!hint && (!left(hint) || !right(hint)));
-    assert(successor(position) == hint || predecessor(position) == hint);
+    assert(!!sub && (!left(sub) || !right(sub)));
+    assert(successor(position) == sub || predecessor(position) == sub);
 
     const auto p_x = position.p_node_;
-    const auto p_y = hint.p_node_;
+    const auto p_y = sub.p_node_;
 
     const auto p_y_parent = p_y->p_parent;
 

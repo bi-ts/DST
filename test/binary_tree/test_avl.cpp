@@ -151,18 +151,15 @@ BOOST_AUTO_TEST_CASE(load_test_erase)
 
     for (std::size_t i = 0; i < t.size(); ++i)
     {
-      auto it1 = tree.begin();
-      std::advance(it1, i);
-
-      if (!!left(it1.base()) && !!right(it1.base()))
-        continue;
-
       auto tree_copy = tree;
 
       auto it = tree_copy.begin();
       std::advance(it, i);
 
-      tree_copy.erase(it.base());
+      if (!left(it.base()) || !right(it.base()))
+        tree_copy.erase(it.base());
+      else
+        tree_copy.erase(it.base(), successor(it.base()));
 
       const auto invariant_holds = dst_test::avl_invariant_holds(tree_copy);
 
