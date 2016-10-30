@@ -67,6 +67,18 @@ void write_graphviz(std::ostream& out,
 }
 
 template <typename BinaryTreeChildrenIterator,
+          typename F,
+          typename = enable_for_binary_tree_children_iterator<
+            BinaryTreeChildrenIterator>>
+void write_graphviz(std::ostream& out,
+                    BinaryTreeChildrenIterator x,
+                    const F& f,
+                    BinaryTreeChildrenIterator highlight)
+{
+  write_graphviz(out, x, f, &highlight, &highlight + 1);
+}
+
+template <typename BinaryTreeChildrenIterator,
           typename = enable_for_binary_tree_children_iterator<
             BinaryTreeChildrenIterator>>
 void write_graphviz(
