@@ -34,6 +34,9 @@ private:
                 "Must be balanced");
 
 public:
+  using typename base::tree_iterator;
+  using typename base::const_tree_iterator;
+
   using typename base::value_type;
   using typename base::reference;
   using typename base::iterator;
@@ -46,6 +49,8 @@ public:
 
 public:
   using base::get_allocator;
+  using base::root;
+  using base::nil;
   using base::begin;
   using base::end;
   using base::clear;
@@ -304,6 +309,16 @@ public:
   void pop_front()
   {
     erase(cbegin());
+  }
+
+  const_tree_iterator croot() const
+  {
+    return root();
+  }
+
+  const_tree_iterator cnil() const
+  {
+    return nil();
   }
 
   const_iterator cbegin() const
