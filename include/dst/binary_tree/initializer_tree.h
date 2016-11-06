@@ -24,13 +24,13 @@ private:
 public:
   class const_tree_iterator
     : public iterator_facade<const_tree_iterator,
-                             binary_tree_children_iterator_tag,
+                             binary_tree_branch_iterator_tag,
                              const T>
   {
   public:
     friend class initializer_tree;
     friend class iterator_facade<const_tree_iterator,
-                                 binary_tree_children_iterator_tag,
+                                 binary_tree_branch_iterator_tag,
                                  const T>;
 
   public:

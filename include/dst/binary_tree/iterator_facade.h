@@ -14,27 +14,27 @@
 namespace dst
 {
 
-struct binary_tree_children_iterator_tag
+struct binary_tree_branch_iterator_tag
 {
 };
 
-struct binary_tree_iterator_tag : public binary_tree_children_iterator_tag,
+struct binary_tree_iterator_tag : public binary_tree_branch_iterator_tag,
                                   public std::forward_iterator_tag
 {
 };
 
 template <typename Iterator, typename T = void>
-using enable_for_binary_tree_children_iterator = typename std::enable_if<
+using enable_for_binary_tree_branch_iterator = typename std::enable_if<
   std::is_convertible<typename Iterator::iterator_category,
-                      binary_tree_children_iterator_tag>::value>;
+                      binary_tree_branch_iterator_tag>::value>;
 
 template <typename Iterator, typename T = void>
 using enable_for_binary_tree_iterator =
   enable_for_iterator_category<Iterator, binary_tree_iterator_tag>;
 
 template <typename Derived, typename T>
-class iterator_facade<Derived, binary_tree_children_iterator_tag, T>
-  : public std::iterator<binary_tree_children_iterator_tag, T>
+class iterator_facade<Derived, binary_tree_branch_iterator_tag, T>
+  : public std::iterator<binary_tree_branch_iterator_tag, T>
 {
 public:
   bool operator!() const

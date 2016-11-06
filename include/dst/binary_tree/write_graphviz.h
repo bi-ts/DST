@@ -17,20 +17,20 @@ namespace dst
 namespace binary_tree
 {
 
-template <typename BinaryTreeChildrenIterator,
-          typename F,
-          typename ForwardIterator = BinaryTreeChildrenIterator*,
-          typename = enable_for_binary_tree_children_iterator<
-            BinaryTreeChildrenIterator>>
+template <
+  typename BinaryTreeBranchIterator,
+  typename F,
+  typename ForwardIterator = BinaryTreeBranchIterator*,
+  typename = enable_for_binary_tree_branch_iterator<BinaryTreeBranchIterator>>
 void write_graphviz(std::ostream& out,
-                    BinaryTreeChildrenIterator x,
+                    BinaryTreeBranchIterator x,
                     const F& f,
                     ForwardIterator from = nullptr,
                     ForwardIterator to = nullptr)
 {
   out << "digraph G {" << std::endl;
 
-  std::queue<BinaryTreeChildrenIterator> q;
+  std::queue<BinaryTreeBranchIterator> q;
   q.push(x);
 
   int idx = 0;
@@ -66,29 +66,29 @@ void write_graphviz(std::ostream& out,
   out << "}" << std::endl;
 }
 
-template <typename BinaryTreeChildrenIterator,
-          typename F,
-          typename = enable_for_binary_tree_children_iterator<
-            BinaryTreeChildrenIterator>>
+template <
+  typename BinaryTreeBranchIterator,
+  typename F,
+  typename = enable_for_binary_tree_branch_iterator<BinaryTreeBranchIterator>>
 void write_graphviz(std::ostream& out,
-                    BinaryTreeChildrenIterator x,
+                    BinaryTreeBranchIterator x,
                     const F& f,
-                    BinaryTreeChildrenIterator highlight)
+                    BinaryTreeBranchIterator highlight)
 {
   write_graphviz(out, x, f, &highlight, &highlight + 1);
 }
 
-template <typename BinaryTreeChildrenIterator,
-          typename = enable_for_binary_tree_children_iterator<
-            BinaryTreeChildrenIterator>>
+template <
+  typename BinaryTreeBranchIterator,
+  typename = enable_for_binary_tree_branch_iterator<BinaryTreeBranchIterator>>
 void write_graphviz(
   std::ostream& out,
-  BinaryTreeChildrenIterator x,
-  BinaryTreeChildrenIterator highlight = BinaryTreeChildrenIterator())
+  BinaryTreeBranchIterator x,
+  BinaryTreeBranchIterator highlight = BinaryTreeBranchIterator())
 {
   write_graphviz(out,
                  x,
-                 [](BinaryTreeChildrenIterator x)
+                 [](BinaryTreeBranchIterator x)
                  {
                    return *x;
                  },

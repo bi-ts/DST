@@ -16,20 +16,20 @@
 namespace dst
 {
 
-template <typename BinaryTreeChildrenIterator,
-          typename = enable_for_binary_tree_children_iterator<
-            BinaryTreeChildrenIterator>>
-bool leaf(BinaryTreeChildrenIterator position)
+template <
+  typename BinaryTreeBranchIterator,
+  typename = enable_for_binary_tree_branch_iterator<BinaryTreeBranchIterator>>
+bool leaf(BinaryTreeBranchIterator position)
 {
   assert(!!position);
 
   return !left(position) && !right(position);
 }
 
-template <typename BinaryTreeChildrenIterator,
-          typename = enable_for_binary_tree_children_iterator<
-            BinaryTreeChildrenIterator>>
-BinaryTreeChildrenIterator maximum(BinaryTreeChildrenIterator root)
+template <
+  typename BinaryTreeBranchIterator,
+  typename = enable_for_binary_tree_branch_iterator<BinaryTreeBranchIterator>>
+BinaryTreeBranchIterator maximum(BinaryTreeBranchIterator root)
 {
   if (!!root)
   {
@@ -42,10 +42,10 @@ BinaryTreeChildrenIterator maximum(BinaryTreeChildrenIterator root)
   return root;
 }
 
-template <typename BinaryTreeChildrenIterator,
-          typename = enable_for_binary_tree_children_iterator<
-            BinaryTreeChildrenIterator>>
-BinaryTreeChildrenIterator minimum(BinaryTreeChildrenIterator root)
+template <
+  typename BinaryTreeBranchIterator,
+  typename = enable_for_binary_tree_branch_iterator<BinaryTreeBranchIterator>>
+BinaryTreeBranchIterator minimum(BinaryTreeBranchIterator root)
 {
   if (!!root)
   {
@@ -69,10 +69,10 @@ BinaryTreeIterator parent(BinaryTreeIterator position)
   return ++p;
 }
 
-template <typename BinaryTreeChildrenIterator,
-          typename = enable_for_binary_tree_children_iterator<
-            BinaryTreeChildrenIterator>>
-BinaryTreeChildrenIterator roll_down_left(BinaryTreeChildrenIterator root)
+template <
+  typename BinaryTreeBranchIterator,
+  typename = enable_for_binary_tree_branch_iterator<BinaryTreeBranchIterator>>
+BinaryTreeBranchIterator roll_down_left(BinaryTreeBranchIterator root)
 {
   if (!root)
     return root;
@@ -85,10 +85,10 @@ BinaryTreeChildrenIterator roll_down_left(BinaryTreeChildrenIterator root)
   return root;
 }
 
-template <typename BinaryTreeChildrenIterator,
-          typename = enable_for_binary_tree_children_iterator<
-            BinaryTreeChildrenIterator>>
-BinaryTreeChildrenIterator roll_down_right(BinaryTreeChildrenIterator root)
+template <
+  typename BinaryTreeBranchIterator,
+  typename = enable_for_binary_tree_branch_iterator<BinaryTreeBranchIterator>>
+BinaryTreeBranchIterator roll_down_right(BinaryTreeBranchIterator root)
 {
   if (!root)
     return root;
@@ -137,14 +137,12 @@ BinaryTreeIterator sibling(BinaryTreeIterator position)
 }
 
 template <
-  typename BinaryTreeChildrenIteratorA,
-  typename BinaryTreeChildrenIteratorB,
-  typename =
-    enable_for_binary_tree_children_iterator<BinaryTreeChildrenIteratorA>,
-  typename =
-    enable_for_binary_tree_children_iterator<BinaryTreeChildrenIteratorB>>
-bool topologically_equal(BinaryTreeChildrenIteratorA x,
-                         BinaryTreeChildrenIteratorB y)
+  typename BinaryTreeBranchIteratorA,
+  typename BinaryTreeBranchIteratorB,
+  typename = enable_for_binary_tree_branch_iterator<BinaryTreeBranchIteratorA>,
+  typename = enable_for_binary_tree_branch_iterator<BinaryTreeBranchIteratorB>>
+bool topologically_equal(BinaryTreeBranchIteratorA x,
+                         BinaryTreeBranchIteratorB y)
 {
   if (!x && !y)
     return true;
