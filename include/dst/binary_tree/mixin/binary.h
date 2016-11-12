@@ -612,7 +612,7 @@ private:
 
   void copy_assignment_(const binary& other, std::true_type)
   {
-    binary tmp(other);
+    binary tmp(other, other.get_allocator());
     swap_(tmp, std::true_type());
   }
 
@@ -636,8 +636,7 @@ private:
 
   void swap_(binary& other, std::true_type)
   {
-    std::swap(static_cast<allocator_type&>(*this),
-              static_cast<allocator_type&>(other));
+    std::swap<allocator_type>(*this, other);
 
     std::swap(p_nil_, other.p_nil_);
     std::swap(allocated_nodes_count_, other.allocated_nodes_count_);
