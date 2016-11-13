@@ -6,11 +6,35 @@
 
 #pragma once
 
-#include <memory> // std::allocator_traits, std::addressof
+#include <memory>  // std::allocator_traits, std::addressof
 #include <utility> // std::forward
 
 namespace dst
 {
+
+template <typename T, typename Allocator, typename... Args>
+void construct(const Allocator& alloc, T& obj, Args&&... args)
+{
+  using allocator_type =
+    typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
+
+  allocator_type allocator(alloc);
+
+  std::allocator_traits<allocator_type>::construct(
+    allocator, std::addressof(obj), std::forward<Args>(args)...);
+}
+
+template <typename T, typename Allocator>
+void destroy(const Allocator& alloc, T& obj)
+{
+  using allocator_type =
+    typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
+
+  allocator_type allocator(alloc);
+
+  std::allocator_traits<allocator_type>::destroy(allocator,
+                                                 std::addressof(obj));
+}
 
 template <typename T, typename Allocator, typename... Args>
 typename std::allocator_traits<Allocator>::template rebind_traits<T>::pointer
@@ -40,8 +64,8 @@ new_object(const Allocator& alloc, Args&&... args)
 
 template <typename T, typename Allocator>
 void delete_object(const Allocator& alloc,
-              typename std::allocator_traits<
-                Allocator>::template rebind_traits<T>::pointer p_object)
+                   typename std::allocator_traits<
+                     Allocator>::template rebind_traits<T>::pointer p_object)
 {
   using allocator_type =
     typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
@@ -50,8 +74,8 @@ void delete_object(const Allocator& alloc,
 
   try
   {
-    std::allocator_traits<allocator_type>::destroy(
-      allocator, std::addressof(*p_object));
+    std::allocator_traits<allocator_type>::destroy(allocator,
+                                                   std::addressof(*p_object));
   }
   catch (...)
   {

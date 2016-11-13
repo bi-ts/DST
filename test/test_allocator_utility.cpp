@@ -29,9 +29,41 @@ struct throw_in_dtor
     throw 0;
   }
 };
+
+struct ctor_dtor
+{
+  ctor_dtor()
+  : data(42)
+  {
+  }
+
+  ~ctor_dtor()
+  {
+    data = 242;
+  }
+
+  int data;
+};
 }
 
 BOOST_AUTO_TEST_SUITE(test_allocator_utility)
+
+BOOST_AUTO_TEST_CASE(test_construct_destroy)
+{
+  int data = 0;
+
+  ctor_dtor* p_obj = reinterpret_cast<ctor_dtor*>(&data);
+
+  BOOST_TEST(p_obj->data == 0);
+
+  dst::construct(std::allocator<int>(), *p_obj);
+
+  BOOST_TEST(p_obj->data == 42);
+
+  dst::destroy(std::allocator<int>(), *p_obj);
+
+  BOOST_TEST(p_obj->data == 242);
+}
 
 BOOST_AUTO_TEST_CASE(test_new_delete_object)
 {
