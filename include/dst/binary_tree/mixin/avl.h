@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <tuple> // std::tie
 
 namespace dst
 {

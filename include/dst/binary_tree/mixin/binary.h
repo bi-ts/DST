@@ -35,23 +35,46 @@ template <typename T,
 class binary : public Allocator, public Base<T, M, Allocator>
 {
 private:
+  struct node;
+
+  using node_pointer = typename std::allocator_traits<
+    Allocator>::template rebind_traits<node>::pointer;
+
+  struct links
+  {
+    node_pointer p_parent;
+    node_pointer p_left;
+    node_pointer p_right;
+  };
+
   struct node
   {
-    using pointer = typename std::allocator_traits<
-      Allocator>::template rebind_traits<node>::pointer;
-
-    node(const T& v, pointer parent, pointer left, pointer right)
-    : data(v)
-    , p_parent(parent)
-    , p_left(left)
-    , p_right(right)
+    node(const T& v,
+         node_pointer p_parent,
+         node_pointer p_left,
+         node_pointer p_right)
+    : val(v)
+    , data({p_parent, p_left, p_right})
     {
     }
 
-    pair_or_single<T, M> data;
-    pointer p_parent;
-    pointer p_left;
-    pointer p_right;
+    node_pointer& parent()
+    {
+      return data.first().p_parent;
+    }
+
+    node_pointer& left()
+    {
+      return data.first().p_left;
+    }
+
+    node_pointer& right()
+    {
+      return data.first().p_right;
+    }
+
+    T val;
+    pair_or_single<links, M> data;
   };
 
   template <typename U>
@@ -83,38 +106,38 @@ private:
     }
 
   private:
-    explicit tree_iterator_base(typename node::pointer p_node)
+    explicit tree_iterator_base(node_pointer p_node)
     : p_node_(p_node)
     {
     }
 
     bool nil() const
     {
-      return p_node_ == nullptr || p_node_->p_left == p_node_;
+      return p_node_ == nullptr || p_node_->left() == p_node_;
     }
 
     U& value() const
     {
-      return p_node_->data.first();
+      return p_node_->val;
     }
 
     void move_to_parent()
     {
-      p_node_ = p_node_->p_parent;
+      p_node_ = p_node_->parent();
     }
 
     void move_left()
     {
-      p_node_ = p_node_->p_left;
+      p_node_ = p_node_->left();
     }
 
     void move_right()
     {
-      p_node_ = p_node_->p_right;
+      p_node_ = p_node_->right();
     }
 
   private:
-    typename node::pointer p_node_;
+    node_pointer p_node_;
   };
 
   template <typename BinaryTreeIterator>
@@ -169,7 +192,7 @@ private:
     void move_back()
     {
       if (!position_)
-        position_ = maximum(BinaryTreeIterator(position_.p_node_->p_right));
+        position_ = maximum(BinaryTreeIterator(position_.p_node_->right()));
       else
         position_ = predecessor(position_);
     }
@@ -198,11 +221,26 @@ protected:
 protected:
   explicit binary(const allocator_type& allocator = allocator_type())
   : allocator_type(allocator)
-  , allocated_nodes_count_(0)
-  , p_nil_(new_node_(value_type(), nullptr, nullptr, nullptr))
+  , size_(0)
+  , p_nil_()
   {
-    p_nil_->p_left = p_nil_;
-    p_nil_->p_right = p_nil_;
+    using node_allocator_type =
+      typename std::allocator_traits<Allocator>::template rebind_alloc<node>;
+
+    node_allocator_type node_allocator(*this);
+
+    p_nil_ = node_allocator.allocate(1);
+
+    try
+    {
+      construct(get_allocator(), p_nil_->data, links{nullptr, p_nil_, p_nil_});
+    }
+    catch (...)
+    {
+      node_allocator.deallocate(p_nil_, 1);
+
+      throw;
+    }
   }
 
   binary(const binary& other)
@@ -221,7 +259,7 @@ protected:
   explicit binary(const binary& other, const allocator_type& allocator)
   : binary(allocator)
   {
-    p_nil_->p_right = copy_subtree_(other.root(), p_nil_);
+    p_nil_->right() = copy_subtree_(other.root(), p_nil_);
   }
 
   binary(binary&& other, const allocator_type& allocator)
@@ -241,19 +279,33 @@ protected:
   binary(const initializer_tree<T>& init, const allocator_type& allocator)
   : binary(allocator)
   {
-    p_nil_->p_right = copy_subtree_(init.root(), p_nil_);
+    p_nil_->right() = copy_subtree_(init.root(), p_nil_);
   }
 
   ~binary()
   {
-    assert((p_nil_ == nullptr) == (allocated_nodes_count_ == 0));
-
     if (p_nil_ == nullptr)
       return;
 
     clear();
 
-    delete_node_(p_nil_);
+    using node_allocator_type =
+      typename std::allocator_traits<Allocator>::template rebind_alloc<node>;
+
+    node_allocator_type node_allocator(get_allocator());
+
+    try
+    {
+      destroy(get_allocator(), p_nil_->data);
+    }
+    catch (...)
+    {
+      node_allocator.deallocate(p_nil_, 1);
+
+      throw;
+    }
+
+    node_allocator.deallocate(p_nil_, 1);
   }
 
   allocator_type get_allocator() const
@@ -265,14 +317,14 @@ protected:
   {
     assert(p_nil_ != nullptr);
 
-    return tree_iterator(p_nil_->p_right);
+    return tree_iterator(p_nil_->right());
   }
 
   const_tree_iterator root() const
   {
     assert(p_nil_ != nullptr);
 
-    return const_tree_iterator(p_nil_->p_right);
+    return const_tree_iterator(p_nil_->right());
   }
 
   tree_iterator nil()
@@ -334,18 +386,18 @@ protected:
     {
       assert(!root());
 
-      p_node->p_right = new_node_(
+      p_node->right() = new_node_(
         value_type(std::forward<Args>(args)...), p_node, p_nil_, p_nil_);
 
-      return tree_iterator(p_node->p_right);
+      return tree_iterator(p_node->right());
     }
 
     assert(!left(position));
 
-    p_node->p_left = new_node_(
+    p_node->left() = new_node_(
       value_type(std::forward<Args>(args)...), p_node, p_nil_, p_nil_);
 
-    return tree_iterator(p_node->p_left);
+    return tree_iterator(p_node->left());
   }
 
   template <typename... Args>
@@ -357,18 +409,18 @@ protected:
     {
       assert(!root());
 
-      p_node->p_right = new_node_(
+      p_node->right() = new_node_(
         value_type(std::forward<Args>(args)...), p_node, p_nil_, p_nil_);
 
-      return tree_iterator(p_node->p_right);
+      return tree_iterator(p_node->right());
     }
 
     assert(!right(position));
 
-    p_node->p_right = new_node_(
+    p_node->right() = new_node_(
       value_type(std::forward<Args>(args)...), p_node, p_nil_, p_nil_);
 
-    return tree_iterator(p_node->p_right);
+    return tree_iterator(p_node->right());
   }
 
   void erase(const_tree_iterator position, const_tree_iterator sub)
@@ -380,34 +432,34 @@ protected:
     const auto p_x = position.p_node_;
     const auto p_y = sub.p_node_;
 
-    const auto p_y_parent = p_y->p_parent;
+    const auto p_y_parent = p_y->parent();
 
-    assert((p_y_parent->p_left == p_y) != (p_y_parent->p_right == p_y));
+    assert((p_y_parent->left() == p_y) != (p_y_parent->right() == p_y));
 
-    const auto p_y_child = p_y->p_left != p_nil_ ? p_y->p_left : p_y->p_right;
+    const auto p_y_child = p_y->left() != p_nil_ ? p_y->left() : p_y->right();
 
-    if (p_y_parent->p_left == p_y)
-      p_y_parent->p_left = p_y_child;
+    if (p_y_parent->left() == p_y)
+      p_y_parent->left() = p_y_child;
     else
-      p_y_parent->p_right = p_y_child;
+      p_y_parent->right() = p_y_child;
 
-    p_y_child->p_parent = p_y_parent;
+    p_y_child->parent() = p_y_parent;
 
-    p_y->p_left = p_x->p_left;
-    p_y->p_right = p_x->p_right;
-    p_y->p_parent = p_x->p_parent;
+    p_y->left() = p_x->left();
+    p_y->right() = p_x->right();
+    p_y->parent() = p_x->parent();
 
-    const auto p_x_parent = p_x->p_parent;
+    const auto p_x_parent = p_x->parent();
 
-    assert((p_x_parent->p_left == p_x) != (p_x_parent->p_right == p_x));
+    assert((p_x_parent->left() == p_x) != (p_x_parent->right() == p_x));
 
-    if (p_x_parent->p_left == p_x)
-      p_x_parent->p_left = p_y;
+    if (p_x_parent->left() == p_x)
+      p_x_parent->left() = p_y;
     else
-      p_x_parent->p_right = p_y;
+      p_x_parent->right() = p_y;
 
-    p_x->p_right->p_parent = p_y;
-    p_x->p_left->p_parent = p_y;
+    p_x->right()->parent() = p_y;
+    p_x->left()->parent() = p_y;
 
     swap_metadata_(p_x->data, p_y->data);
 
@@ -422,18 +474,18 @@ protected:
 
     const auto p_x = position.p_node_;
 
-    const auto p_x_parent = p_x->p_parent;
+    const auto p_x_parent = p_x->parent();
 
-    assert((p_x_parent->p_left == p_x) != (p_x_parent->p_right == p_x));
+    assert((p_x_parent->left() == p_x) != (p_x_parent->right() == p_x));
 
-    const auto p_x_child = p_x->p_left != p_nil_ ? p_x->p_left : p_x->p_right;
+    const auto p_x_child = p_x->left() != p_nil_ ? p_x->left() : p_x->right();
 
-    if (p_x_parent->p_left == p_x)
-      p_x_parent->p_left = p_x_child;
+    if (p_x_parent->left() == p_x)
+      p_x_parent->left() = p_x_child;
     else
-      p_x_parent->p_right = p_x_child;
+      p_x_parent->right() = p_x_child;
 
-    p_x_child->p_parent = p_x_parent;
+    p_x_child->parent() = p_x_parent;
 
     delete_node_(p_x);
   }
@@ -441,7 +493,6 @@ protected:
   void clear()
   {
     assert(p_nil_ != nullptr);
-    assert(allocated_nodes_count_ >= 1);
 
     auto it = begin_postorder_depth_first_search(root());
     auto it_end = end_postorder_depth_first_search(nil());
@@ -451,7 +502,7 @@ protected:
       delete_node_((it++).base().p_node_);
     }
 
-    p_nil_->p_right = p_nil_;
+    p_nil_->right() = p_nil_;
   }
 
   void swap(binary& other)
@@ -463,9 +514,7 @@ protected:
 
   size_type size() const
   {
-    assert(allocated_nodes_count_ >= 1);
-
-    return allocated_nodes_count_ - 1;
+    return size_;
   }
 
   size_type max_size() const
@@ -481,8 +530,7 @@ protected:
     return size() == 0;
   }
 
-  static auto metadata(const_tree_iterator position)
-    -> decltype(position.p_node_->data.second())
+  static typename ref_or_void<M>::type metadata(const_tree_iterator position)
   {
     return position.p_node_->data.second();
   }
@@ -497,7 +545,7 @@ protected:
   {
     assert(!nil_position);
 
-    return tree_iterator(nil_position.p_node_->p_right);
+    return tree_iterator(nil_position.p_node_->right());
   }
 
   // $   |            |   $
@@ -511,20 +559,20 @@ protected:
     assert(right(x) != nil());
 
     const auto p_x = x.p_node_;
-    const auto p_y = p_x->p_right;
+    const auto p_y = p_x->right();
 
-    p_x->p_right = p_y->p_left;
-    p_y->p_left->p_parent = p_x;
+    p_x->right() = p_y->left();
+    p_y->left()->parent() = p_x;
 
-    p_y->p_parent = p_x->p_parent;
+    p_y->parent() = p_x->parent();
 
-    if (p_x == p_x->p_parent->p_left)
-      p_x->p_parent->p_left = p_y;
+    if (p_x == p_x->parent()->left())
+      p_x->parent()->left() = p_y;
     else
-      p_x->p_parent->p_right = p_y;
+      p_x->parent()->right() = p_y;
 
-    p_y->p_left = p_x;
-    p_x->p_parent = p_y;
+    p_y->left() = p_x;
+    p_x->parent() = p_y;
 
     return tree_iterator(p_y);
   }
@@ -540,70 +588,70 @@ protected:
     assert(left(x) != nil());
 
     const auto p_x = x.p_node_;
-    const auto p_y = p_x->p_left;
+    const auto p_y = p_x->left();
 
-    p_x->p_left = p_y->p_right;
-    p_y->p_right->p_parent = p_x;
+    p_x->left() = p_y->right();
+    p_y->right()->parent() = p_x;
 
-    p_y->p_parent = p_x->p_parent;
+    p_y->parent() = p_x->parent();
 
-    if (p_x == p_x->p_parent->p_right)
-      p_x->p_parent->p_right = p_y;
+    if (p_x == p_x->parent()->right())
+      p_x->parent()->right() = p_y;
     else
-      p_x->p_parent->p_left = p_y;
+      p_x->parent()->left() = p_y;
 
-    p_y->p_right = p_x;
-    p_x->p_parent = p_y;
+    p_y->right() = p_x;
+    p_x->parent() = p_y;
 
     return tree_iterator(p_y);
   }
 
 private:
-  typename node::pointer new_node_(const_reference v,
-                                   typename node::pointer p_parent,
-                                   typename node::pointer p_left,
-                                   typename node::pointer p_right)
+  node_pointer new_node_(const_reference v,
+                         node_pointer p_parent,
+                         node_pointer p_left,
+                         node_pointer p_right)
   {
     const auto p_new_node =
       new_object<node>(get_allocator(), v, p_parent, p_left, p_right);
 
-    ++allocated_nodes_count_;
+    ++size_;
 
     return p_new_node;
   }
 
-  void delete_node_(typename node::pointer p_node)
+  void delete_node_(node_pointer p_node)
   {
-    --allocated_nodes_count_;
+    --size_;
 
     delete_object<node>(get_allocator(), p_node);
   }
 
   template <typename ConstBinaryTreeIterator>
-  typename node::pointer copy_subtree_(ConstBinaryTreeIterator x,
-                                       typename node::pointer p_target_parent)
+  node_pointer copy_subtree_(ConstBinaryTreeIterator x,
+                             node_pointer p_target_parent)
   {
     if (!x)
       return p_nil_;
 
     const auto p_node = new_node_(*x, p_target_parent, nullptr, nullptr);
 
-    p_node->p_left = copy_subtree_(left(x), p_node);
-    p_node->p_right = copy_subtree_(right(x), p_node);
+    p_node->left() = copy_subtree_(left(x), p_node);
+    p_node->right() = copy_subtree_(right(x), p_node);
 
     return p_node;
   }
 
-  typename node::pointer copy_subtree_(const_tree_iterator x,
-                                       typename node::pointer p_target_parent)
+  node_pointer copy_subtree_(const_tree_iterator x,
+                             node_pointer p_target_parent)
   {
     if (!x)
       return p_nil_;
 
     const auto p_node = new_node_(*x, p_target_parent, nullptr, nullptr);
 
-    p_node->p_left = copy_subtree_(left(x), p_node);
-    p_node->p_right = copy_subtree_(right(x), p_node);
+    p_node->left() = copy_subtree_(left(x), p_node);
+    p_node->right() = copy_subtree_(right(x), p_node);
 
     copy_metadata_(x.p_node_->data, p_node->data);
 
@@ -624,7 +672,7 @@ private:
 
   void move_assignment_(binary&& other, std::true_type)
   {
-    binary tmp(std::move(other));
+    binary tmp(std::move(other), other.get_allocator());
     swap_(tmp, std::true_type());
   }
 
@@ -639,7 +687,7 @@ private:
     std::swap<allocator_type>(*this, other);
 
     std::swap(p_nil_, other.p_nil_);
-    std::swap(allocated_nodes_count_, other.allocated_nodes_count_);
+    std::swap(size_, other.size_);
   }
 
   void swap_(binary& other, std::false_type)
@@ -647,7 +695,7 @@ private:
     assert(get_allocator() == other.get_allocator());
 
     std::swap(p_nil_, other.p_nil_);
-    std::swap(allocated_nodes_count_, other.allocated_nodes_count_);
+    std::swap(size_, other.size_);
   }
 
   template <typename U, typename V>
@@ -675,8 +723,8 @@ private:
   }
 
 public:
-  size_type allocated_nodes_count_;
-  typename node::pointer p_nil_;
+  size_type size_;
+  node_pointer p_nil_;
 };
 
 } // mixin

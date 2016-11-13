@@ -9,6 +9,18 @@
 namespace dst
 {
 
+template <typename T> class ref_or_void 
+{
+public:
+  using type = T&;
+};
+
+template <> class ref_or_void<void>
+{
+public:
+  using type = void;
+};
+
 template <typename F, typename S> class pair_or_single
 {
 public:

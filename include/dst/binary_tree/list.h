@@ -48,6 +48,9 @@ public:
   using typename base::difference_type;
   using typename base::size_type;
 
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
   using allocator_type = typename base::allocator_type;
 
 public:
