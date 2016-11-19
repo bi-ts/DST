@@ -372,6 +372,11 @@ public:
   {
     base::swap(other);
   }
+
+  friend void swap(list& lhs, list& rhs)
+  {
+    lhs.swap(rhs);
+  }
 };
 
 } // binary_tree
