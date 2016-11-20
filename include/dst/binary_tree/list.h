@@ -277,9 +277,9 @@ public:
     *this = list(n, v, base::get_allocator());
   }
 
-  template <typename... Args> void emplace_back(Args&&... args)
+  template <typename... Args> reference emplace_back(Args&&... args)
   {
-    emplace(cend(), std::forward<Args>(args)...);
+    return *emplace(cend(), std::forward<Args>(args)...);
   }
 
   void push_back(const_reference v)
@@ -297,9 +297,9 @@ public:
     erase(--cend());
   }
 
-  template <typename... Args> void emplace_front(Args&&... args)
+  template <typename... Args> reference emplace_front(Args&&... args)
   {
-    emplace(cbegin(), std::forward<Args>(args)...);
+    return *emplace(cbegin(), std::forward<Args>(args)...);
   }
 
   void push_front(const_reference v)
