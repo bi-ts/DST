@@ -65,7 +65,12 @@ public:
   using base::empty;
 
 public:
-  explicit list(const allocator_type& allocator = allocator_type())
+  list()
+  : base()
+  {
+  }
+
+  explicit list(const allocator_type& allocator)
   : base(allocator)
   {
   }
@@ -87,7 +92,16 @@ public:
   {
     for (size_type i = 0; i < n; ++i)
     {
-      push_back(v);
+      push_back(std::move(v));
+    }
+  }
+
+  list(size_type n)
+  : base()
+  {
+    for (size_type i = 0; i < n; ++i)
+    {
+      emplace_back();
     }
   }
 
@@ -289,7 +303,7 @@ public:
 
   void push_back(value_type&& v)
   {
-    insert(cend(), std::forward<value_type>(v));
+    insert(cend(), std::move(v));
   }
 
   void pop_back()

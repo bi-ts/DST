@@ -42,7 +42,12 @@ protected:
   using allocator_type = typename base::allocator_type;
 
 protected:
-  explicit avl(const allocator_type& allocator = allocator_type())
+  avl()
+  : base()
+  {
+  }
+
+  explicit avl(const allocator_type& allocator)
   : base(allocator)
   {
   }

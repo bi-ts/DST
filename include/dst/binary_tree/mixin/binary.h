@@ -49,11 +49,12 @@ private:
 
   struct node
   {
-    node(const T& v,
-         node_pointer p_parent,
+    template <typename... Args>
+    node(node_pointer p_parent,
          node_pointer p_left,
-         node_pointer p_right)
-    : val(v)
+         node_pointer p_right,
+         Args&&... args)
+    : value(std::forward<Args>(args)...)
     , data({p_parent, p_left, p_right})
     {
     }
@@ -73,7 +74,7 @@ private:
       return data.first().p_right;
     }
 
-    T val;
+    T value;
     pair_or_single<links, M> data;
   };
 
@@ -118,7 +119,7 @@ private:
 
     U& value() const
     {
-      return p_node_->val;
+      return p_node_->value;
     }
 
     void move_to_parent()
@@ -219,28 +220,20 @@ protected:
   using allocator_type = Allocator;
 
 protected:
-  explicit binary(const allocator_type& allocator = allocator_type())
+  binary()
+  : allocator_type()
+  , size_(0)
+  , p_nil_()
+  {
+    p_nil_ = new_nil_node_();
+  }
+
+  explicit binary(const allocator_type& allocator)
   : allocator_type(allocator)
   , size_(0)
   , p_nil_()
   {
-    using node_allocator_type =
-      typename std::allocator_traits<Allocator>::template rebind_alloc<node>;
-
-    node_allocator_type node_allocator(*this);
-
-    p_nil_ = node_allocator.allocate(1);
-
-    try
-    {
-      construct(get_allocator(), p_nil_->data, links{nullptr, p_nil_, p_nil_});
-    }
-    catch (...)
-    {
-      node_allocator.deallocate(p_nil_, 1);
-
-      throw;
-    }
+    p_nil_ = new_nil_node_();
   }
 
   binary(const binary& other)
@@ -271,8 +264,7 @@ protected:
     }
     else
     {
-      binary tmp(other, allocator);
-      swap_(tmp, std::false_type());
+      p_nil_->right() = move_subtree_(other.root(), p_nil_);
     }
   }
 
@@ -386,16 +378,16 @@ protected:
     {
       assert(!root());
 
-      p_node->right() = new_node_(
-        value_type(std::forward<Args>(args)...), p_node, p_nil_, p_nil_);
+      p_node->right() =
+        new_node_(p_node, p_nil_, p_nil_, std::forward<Args>(args)...);
 
       return tree_iterator(p_node->right());
     }
 
     assert(!left(position));
 
-    p_node->left() = new_node_(
-      value_type(std::forward<Args>(args)...), p_node, p_nil_, p_nil_);
+    p_node->left() =
+      new_node_(p_node, p_nil_, p_nil_, std::forward<Args>(args)...);
 
     return tree_iterator(p_node->left());
   }
@@ -409,16 +401,16 @@ protected:
     {
       assert(!root());
 
-      p_node->right() = new_node_(
-        value_type(std::forward<Args>(args)...), p_node, p_nil_, p_nil_);
+      p_node->right() =
+        new_node_(p_node, p_nil_, p_nil_, std::forward<Args>(args)...);
 
       return tree_iterator(p_node->right());
     }
 
     assert(!right(position));
 
-    p_node->right() = new_node_(
-      value_type(std::forward<Args>(args)...), p_node, p_nil_, p_nil_);
+    p_node->right() =
+      new_node_(p_node, p_nil_, p_nil_, std::forward<Args>(args)...);
 
     return tree_iterator(p_node->right());
   }
@@ -607,13 +599,37 @@ protected:
   }
 
 private:
-  node_pointer new_node_(const_reference v,
-                         node_pointer p_parent,
-                         node_pointer p_left,
-                         node_pointer p_right)
+  node_pointer new_nil_node_()
   {
-    const auto p_new_node =
-      new_object<node>(get_allocator(), v, p_parent, p_left, p_right);
+    using node_allocator_type =
+      typename std::allocator_traits<Allocator>::template rebind_alloc<node>;
+
+    node_allocator_type node_allocator(*this);
+
+    const auto p_nil = node_allocator.allocate(1);
+
+    try
+    {
+      construct(get_allocator(), p_nil->data, links{nullptr, p_nil, p_nil});
+    }
+    catch (...)
+    {
+      node_allocator.deallocate(p_nil, 1);
+
+      throw;
+    }
+
+    return p_nil;
+  }
+
+  template <typename... Args>
+  node_pointer new_node_(node_pointer p_parent,
+                         node_pointer p_left,
+                         node_pointer p_right,
+                         Args&&... args)
+  {
+    const auto p_new_node = new_object<node>(
+      get_allocator(), p_parent, p_left, p_right, std::forward<Args>(args)...);
 
     ++size_;
 
@@ -634,7 +650,7 @@ private:
     if (!x)
       return p_nil_;
 
-    const auto p_node = new_node_(*x, p_target_parent, nullptr, nullptr);
+    const auto p_node = new_node_(p_target_parent, nullptr, nullptr, *x);
 
     p_node->left() = copy_subtree_(left(x), p_node);
     p_node->right() = copy_subtree_(right(x), p_node);
@@ -648,10 +664,26 @@ private:
     if (!x)
       return p_nil_;
 
-    const auto p_node = new_node_(*x, p_target_parent, nullptr, nullptr);
+    const auto p_node = new_node_(p_target_parent, nullptr, nullptr, *x);
 
     p_node->left() = copy_subtree_(left(x), p_node);
     p_node->right() = copy_subtree_(right(x), p_node);
+
+    copy_metadata_(x.p_node_->data, p_node->data);
+
+    return p_node;
+  }
+
+  node_pointer move_subtree_(tree_iterator x, node_pointer p_target_parent)
+  {
+    if (!x)
+      return p_nil_;
+
+    const auto p_node =
+      new_node_(p_target_parent, nullptr, nullptr, std::move(*x));
+
+    p_node->left() = move_subtree_(left(x), p_node);
+    p_node->right() = move_subtree_(right(x), p_node);
 
     copy_metadata_(x.p_node_->data, p_node->data);
 
