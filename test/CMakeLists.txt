@@ -30,6 +30,7 @@ add_executable(dst_test
   test_allocator_utility.cpp
   test_counter_allocator.cpp
   test_global_counter_allocator.cpp
+  test_utility.cpp
 )
 
 target_include_directories(dst_test PRIVATE "${Boost_INCLUDE_DIRS}")

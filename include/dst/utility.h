@@ -6,16 +6,19 @@
 
 #pragma once
 
+#include <type_traits>
+
 namespace dst
 {
 
-template <typename T> class ref_or_void 
+template <typename T> class ref_or_void
 {
 public:
   using type = T&;
 };
 
-template <> class ref_or_void<void>
+template <>
+class ref_or_void<void>
 {
 public:
   using type = void;
@@ -24,7 +27,14 @@ public:
 template <typename F, typename S> class pair_or_single
 {
 public:
-  explicit pair_or_single(const F& f = F(), const S& s = S())
+  pair_or_single() noexcept(std::is_nothrow_default_constructible<F>::value&&
+                              std::is_nothrow_default_constructible<S>::value)
+  : first_()
+  , second_()
+  {
+  }
+
+  explicit pair_or_single(const F& f, const S& s = S())
   : first_(f)
   , second_(s)
   {
@@ -58,7 +68,12 @@ private:
 template <typename F> class pair_or_single<F, void>
 {
 public:
-  explicit pair_or_single(const F& f = F())
+  pair_or_single() noexcept(std::is_nothrow_default_constructible<F>::value)
+  : first_()
+  {
+  }
+
+  explicit pair_or_single(const F& f)
   : first_(f)
   {
   }
