@@ -12,7 +12,11 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <cstddef> // std::size_t
+#include <iostream>
+#include <iterator> // std::advance
 #include <queue>
+#include <utility> // std::pair, std::make_pair
 
 namespace dst_test
 {
