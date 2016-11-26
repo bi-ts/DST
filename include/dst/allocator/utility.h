@@ -12,8 +12,14 @@
 namespace dst
 {
 
+namespace memory
+{
+
 template <typename T, typename Allocator, typename... Args>
-void construct(const Allocator& alloc, T& obj, Args&&... args)
+typename std::enable_if<
+  !std::is_same<typename std::allocator_traits<Allocator>::value_type,
+                T>::value>::type
+construct(const Allocator& alloc, T& obj, Args&&... args)
 {
   using allocator_type =
     typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
@@ -24,8 +30,21 @@ void construct(const Allocator& alloc, T& obj, Args&&... args)
     allocator, std::addressof(obj), std::forward<Args>(args)...);
 }
 
+template <typename T, typename Allocator, typename... Args>
+typename std::enable_if<
+  std::is_same<typename std::allocator_traits<Allocator>::value_type,
+               T>::value>::type
+construct(const Allocator& alloc, T& obj, Args&&... args)
+{
+  std::allocator_traits<Allocator>::construct(
+    alloc, std::addressof(obj), std::forward<Args>(args)...);
+}
+
 template <typename T, typename Allocator>
-void destroy(const Allocator& alloc, T& obj)
+typename std::enable_if<
+  !std::is_same<typename std::allocator_traits<Allocator>::value_type,
+                T>::value>::type
+destroy(const Allocator& alloc, T& obj)
 {
   using allocator_type =
     typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
@@ -34,6 +53,15 @@ void destroy(const Allocator& alloc, T& obj)
 
   std::allocator_traits<allocator_type>::destroy(allocator,
                                                  std::addressof(obj));
+}
+
+template <typename T, typename Allocator>
+typename std::enable_if<
+  std::is_same<typename std::allocator_traits<Allocator>::value_type,
+               T>::value>::type
+destroy(const Allocator& alloc, T& obj)
+{
+  std::allocator_traits<Allocator>::destroy(alloc, std::addressof(obj));
 }
 
 template <typename T, typename Allocator, typename... Args>
@@ -86,5 +114,5 @@ void delete_object(const Allocator& alloc,
 
   allocator.deallocate(p_object, 1);
 }
+} // memory
 } // dst
-

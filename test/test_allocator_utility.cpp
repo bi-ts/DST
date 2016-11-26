@@ -56,11 +56,11 @@ BOOST_AUTO_TEST_CASE(test_construct_destroy)
 
   BOOST_TEST(p_obj->data == 0);
 
-  dst::construct(std::allocator<int>(), *p_obj);
+  dst::memory::construct(std::allocator<int>(), *p_obj);
 
   BOOST_TEST(p_obj->data == 42);
 
-  dst::destroy(std::allocator<int>(), *p_obj);
+  dst::memory::destroy(std::allocator<int>(), *p_obj);
 
   BOOST_TEST(p_obj->data == 242);
 }
@@ -74,14 +74,14 @@ BOOST_AUTO_TEST_CASE(test_new_delete_object)
   BOOST_TEST(allocator.allocated() == 0);
 
   const auto p_vector =
-    dst::new_object<std::vector<std::string>>(allocator, 3, "42");
+    dst::memory::new_object<std::vector<std::string>>(allocator, 3, "42");
 
   BOOST_TEST(allocator.allocated() != 0);
 
   BOOST_TEST(p_vector->size() == 3);
   BOOST_TEST(p_vector->at(1) == "42");
 
-  dst::delete_object<std::vector<std::string>>(allocator, p_vector);
+  dst::memory::delete_object<std::vector<std::string>>(allocator, p_vector);
 
   BOOST_TEST(allocator.allocated() == 0);
 }
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(test_throw_in_ctor)
 
   try
   {
-    dst::new_object<throw_in_ctor>(allocator);
+    dst::memory::new_object<throw_in_ctor>(allocator);
   }
   catch (...)
   {
@@ -117,12 +117,12 @@ BOOST_AUTO_TEST_CASE(test_throw_in_dtor)
 
   BOOST_TEST(allocator.allocated() == 0);
 
-  const auto p_object = dst::new_object<throw_in_dtor>(allocator);
+  const auto p_object = dst::memory::new_object<throw_in_dtor>(allocator);
 
   bool exception_was_thrown = false;
   try
   {
-    dst::delete_object<throw_in_dtor>(allocator, p_object);
+    dst::memory::delete_object<throw_in_dtor>(allocator, p_object);
   }
   catch (...)
   {
@@ -134,4 +134,3 @@ BOOST_AUTO_TEST_CASE(test_throw_in_dtor)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

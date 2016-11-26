@@ -288,7 +288,7 @@ protected:
 
     try
     {
-      destroy(get_allocator(), p_nil_->data);
+      memory::destroy(get_allocator(), p_nil_->data);
     }
     catch (...)
     {
@@ -610,7 +610,8 @@ private:
 
     try
     {
-      construct(get_allocator(), p_nil->data, links{nullptr, p_nil, p_nil});
+      memory::construct(
+        get_allocator(), p_nil->data, links{nullptr, p_nil, p_nil});
     }
     catch (...)
     {
@@ -628,7 +629,7 @@ private:
                          node_pointer p_right,
                          Args&&... args)
   {
-    const auto p_new_node = new_object<node>(
+    const auto p_new_node = memory::new_object<node>(
       get_allocator(), p_parent, p_left, p_right, std::forward<Args>(args)...);
 
     ++size_;
@@ -640,7 +641,7 @@ private:
   {
     --size_;
 
-    delete_object<node>(get_allocator(), p_node);
+    memory::delete_object<node>(get_allocator(), p_node);
   }
 
   template <typename ConstBinaryTreeIterator>
