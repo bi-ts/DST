@@ -20,6 +20,9 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
 endif()
 
 add_executable(dst_test 
+  allocator/test_allocator_utility.cpp
+  allocator/test_counter_allocator.cpp
+  allocator/test_global_counter_allocator.cpp
   binary_tree/test_algorithm.cpp
   binary_tree/test_avl.cpp
   binary_tree/test_initializer_tree.cpp
@@ -27,9 +30,6 @@ add_executable(dst_test
   binary_tree/tools/trees_generator.cpp
   binary_tree/tools/trees_generator.h
   main.cpp
-  test_allocator_utility.cpp
-  test_counter_allocator.cpp
-  test_global_counter_allocator.cpp
   test_utility.cpp
 )
 

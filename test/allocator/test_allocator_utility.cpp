@@ -65,6 +65,26 @@ BOOST_AUTO_TEST_CASE(test_construct_destroy)
   BOOST_TEST(p_obj->data == 242);
 }
 
+BOOST_AUTO_TEST_CASE(test_allocate_aligned)
+{
+  dst::counter_allocator<int> allocator;
+
+  for (int i = 1; i <= 255; ++i)
+  {
+    BOOST_TEST(allocator.allocated() == 0);
+
+    const auto p_data = dst::memory::allocate_aligned(allocator, 1, i);
+
+    BOOST_TEST(allocator.allocated() >= 1);
+
+    BOOST_TEST(reinterpret_cast<std::intptr_t>(p_data) % i == 0);
+
+    dst::memory::deallocate_aligned(allocator, p_data, 1, i);
+
+    BOOST_TEST(allocator.allocated() == 0);
+  }
+}
+
 BOOST_AUTO_TEST_CASE(test_new_delete_object)
 {
   using allocator_type = dst::counter_allocator<int>;
