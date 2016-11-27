@@ -274,30 +274,16 @@ protected:
     p_nil_->right() = copy_subtree_(init.root(), p_nil_);
   }
 
-  ~binary()
+  ~binary() noexcept(
+    std::is_nothrow_destructible<decltype(p_nil_->data)>::value)
   {
     if (p_nil_ == nullptr)
       return;
 
     clear();
 
-    using node_allocator_type =
-      typename std::allocator_traits<Allocator>::template rebind_alloc<node>;
-
-    node_allocator_type node_allocator(get_allocator());
-
-    try
-    {
-      memory::destroy(get_allocator(), p_nil_->data);
-    }
-    catch (...)
-    {
-      node_allocator.deallocate(p_nil_, 1);
-
-      throw;
-    }
-
-    node_allocator.deallocate(p_nil_, 1);
+    delete_nil_node_(p_nil_,
+                     std::is_nothrow_destructible<decltype(p_nil_->data)>());
   }
 
   allocator_type get_allocator() const
@@ -623,6 +609,39 @@ private:
     return p_nil;
   }
 
+  void delete_nil_node_(node_pointer p_node, std::true_type) noexcept
+  {
+    using node_allocator_type =
+      typename std::allocator_traits<Allocator>::template rebind_alloc<node>;
+
+    node_allocator_type node_allocator(get_allocator());
+
+    memory::destroy(get_allocator(), p_nil_->data);
+
+    node_allocator.deallocate(p_nil_, 1);
+  }
+
+  void delete_nil_node_(node_pointer p_node, std::false_type) noexcept(false)
+  {
+    using node_allocator_type =
+      typename std::allocator_traits<Allocator>::template rebind_alloc<node>;
+
+    node_allocator_type node_allocator(get_allocator());
+
+    try
+    {
+      memory::destroy(get_allocator(), p_nil_->data);
+    }
+    catch (...)
+    {
+      node_allocator.deallocate(p_nil_, 1);
+
+      throw;
+    }
+
+    node_allocator.deallocate(p_nil_, 1);
+  }
+
   template <typename... Args>
   node_pointer new_node_(node_pointer p_parent,
                          node_pointer p_left,
@@ -717,7 +736,10 @@ private:
 
   void swap_(binary& other, std::true_type)
   {
-    std::swap<allocator_type>(*this, other);
+    allocator_type& a = *this;
+    allocator_type& b = other;
+
+    std::swap(a, b);
 
     std::swap(p_nil_, other.p_nil_);
     std::swap(size_, other.size_);
