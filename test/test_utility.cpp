@@ -68,6 +68,10 @@ BOOST_AUTO_TEST_CASE(test_pair_or_single_is_throw_constructible_destructible)
 {
   struct throwing_ctor_dtor
   {
+    throwing_ctor_dtor() noexcept(false)
+    {
+    }
+
     ~throwing_ctor_dtor() noexcept(false)
     {
     }
@@ -90,4 +94,3 @@ BOOST_AUTO_TEST_CASE(test_pair_or_single_is_throw_constructible_destructible)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-
