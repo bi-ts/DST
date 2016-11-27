@@ -16,22 +16,22 @@ namespace dst
 namespace binary_tree
 {
 
-template <std::size_t Flag> struct marking_flag
-{
-};
-
 namespace mixin
 {
 
 namespace detail
 {
 
+class marking_base_tag
+{
+};
+
 template <typename T,
           typename M,
           typename Allocator,
           template <typename, typename, typename> class Base,
-          typename F>
-class marking_base : public Base<T, M, Allocator>
+          bool>
+class marking_base : public Base<T, M, Allocator>, public marking_base_tag
 {
 private:
   using base = Base<T, M, Allocator>;
@@ -42,9 +42,6 @@ protected:
   using typename base::const_tree_iterator;
 
   using allocator_type = typename base::allocator_type;
-
-public:
-  using marking_flag_type = F;
 
 public:
   void mark(undefined&);
@@ -64,6 +61,11 @@ public:
   void rend_marked(undefined&);
 
 protected:
+  marking_base()
+  : base()
+  {
+  }
+
   explicit marking_base(const allocator_type& allocator)
   : base(allocator)
   {
@@ -80,8 +82,7 @@ protected:
   {
   }
 
-  marking_base(const initializer_tree<T>& init,
-               const allocator_type& allocator)
+  marking_base(const initializer_tree<T>& init, const allocator_type& allocator)
   : base(init, allocator)
   {
   }
@@ -91,12 +92,7 @@ template <typename T,
           typename M,
           typename Allocator,
           template <typename, typename, typename> class Base>
-class marking_base<T,
-                   M,
-                   Allocator,
-                   Base,
-                   typename Base<T, M, Allocator>::marking_flag_type>
-  : public Base<T, M, Allocator>
+class marking_base<T, M, Allocator, Base, true> : public Base<T, M, Allocator>
 {
 private:
   using base = Base<T, M, Allocator>;
@@ -105,7 +101,6 @@ protected:
   using allocator_type = typename base::allocator_type;
 
 public:
-  using typename base::marking_flag_type;
   using base::mark;
   using base::unmark;
   using base::marked;
@@ -132,31 +127,33 @@ protected:
   {
   }
 
-  marking_base(const initializer_tree<T>& init,
-               const allocator_type& allocator)
+  marking_base(const initializer_tree<T>& init, const allocator_type& allocator)
   : base(init, allocator)
   {
   }
 };
 }
 
-template <std::size_t Flag,
+template <typename Flag,
           typename T,
           typename M,
           typename Allocator,
           template <typename, typename, typename> class Base>
-class marking : public detail::marking_base<T,
-                                            pair_or_single<std::size_t, M>,
-                                            Allocator,
-                                            Base,
-                                            std::size_t>
+class marking
+  : public detail::marking_base<
+      T,
+      pair_or_single<std::size_t, M>,
+      Allocator,
+      Base,
+      std::is_base_of<detail::marking_base_tag, Base<T, M, Allocator>>::value>
 {
 private:
-  using base = detail::marking_base<T,
-                                    pair_or_single<std::size_t, M>,
-                                    Allocator,
-                                    Base,
-                                    std::size_t>;
+  using base = detail::marking_base<
+    T,
+    pair_or_single<std::size_t, M>,
+    Allocator,
+    Base,
+    std::is_base_of<detail::marking_base_tag, Base<T, M, Allocator>>::value>;
 
   template <typename BinaryTreeIterator>
   class marked_iterator_base
@@ -226,7 +223,7 @@ private:
 
         assert(!p || rank(p) > rank(position));
 
-        if (!p || marked(p, marking_flag<Flag>()))
+        if (!p || marked(p, Flag()))
           position_ = p;
         else
           position_ = marked_minimum(right(p));
@@ -259,7 +256,7 @@ private:
 
           assert(!p || rank(p) > rank(position));
 
-          if (!p || marked(p, marking_flag<Flag>()))
+          if (!p || marked(p, Flag()))
             position_ = p;
           else
             position_ = marked_maximum(left(p));
@@ -292,8 +289,6 @@ protected:
     std::reverse_iterator<const_marked_iterator>;
 
 public:
-  using typename base::marking_flag_type;
-
   using base::mark;
   using base::unmark;
   using base::marked;
@@ -304,7 +299,7 @@ public:
   using base::rend_marked;
 
 public:
-  bool mark(const_tree_iterator x, marking_flag<Flag> f = marking_flag<Flag>())
+  bool mark(const_tree_iterator x, Flag f = Flag())
   {
     if (marked(x, f))
       return false;
@@ -317,13 +312,12 @@ public:
     return true;
   }
 
-  bool mark(const_iterator x, marking_flag<Flag> f = marking_flag<Flag>())
+  bool mark(const_iterator x, Flag f = Flag())
   {
     return mark(x.base(), f);
   }
 
-  bool unmark(const_tree_iterator x,
-              marking_flag<Flag> f = marking_flag<Flag>())
+  bool unmark(const_tree_iterator x, Flag f = Flag())
   {
     if (!marked(x, f))
       return false;
@@ -336,13 +330,12 @@ public:
     return true;
   }
 
-  bool unmark(const_iterator x, marking_flag<Flag> f = marking_flag<Flag>())
+  bool unmark(const_iterator x, Flag f = Flag())
   {
     return unmark(x.base(), f);
   }
 
-  static bool marked(const_tree_iterator x,
-                     marking_flag<Flag> = marking_flag<Flag>())
+  static bool marked(const_tree_iterator x, Flag = Flag())
   {
     assert(rank(left(x)) + rank(right(x)) <= rank(x));
     assert(rank(x) - (rank(left(x)) + rank(right(x))) <= 1);
@@ -350,19 +343,17 @@ public:
     return rank(left(x)) + rank(right(x)) < rank(x);
   }
 
-  static bool marked(const_iterator x,
-                     marking_flag<Flag> f = marking_flag<Flag>())
+  static bool marked(const_iterator x, Flag f = Flag())
   {
     return marked(x.base(), f);
   }
 
-  static std::size_t marked_nodes(const_tree_iterator x,
-                                  marking_flag<Flag> f = marking_flag<Flag>())
+  static std::size_t marked_nodes(const_tree_iterator x, Flag = Flag())
   {
     return base::metadata(x).first();
   }
 
-  marked_iterator begin_marked(marking_flag<Flag> f = marking_flag<Flag>())
+  marked_iterator begin_marked(Flag f = Flag())
   {
     if (rank(base::root()) == 0)
       return end_marked(f);
@@ -370,8 +361,7 @@ public:
     return marked_iterator(marked_minimum(base::root()));
   }
 
-  const_marked_iterator
-  begin_marked(marking_flag<Flag> f = marking_flag<Flag>()) const
+  const_marked_iterator begin_marked(Flag f = Flag()) const
   {
     if (rank(base::root()) == 0)
       return end_marked(f);
@@ -379,37 +369,32 @@ public:
     return const_marked_iterator(marked_minimum(base::root()));
   }
 
-  marked_iterator end_marked(marking_flag<Flag> f = marking_flag<Flag>())
+  marked_iterator end_marked(Flag f = Flag())
   {
     return marked_iterator(base::end().base());
   }
 
-  const_marked_iterator
-  end_marked(marking_flag<Flag> f = marking_flag<Flag>()) const
+  const_marked_iterator end_marked(Flag f = Flag()) const
   {
     return const_marked_iterator(base::end().base());
   }
 
-  reverse_marked_iterator
-  rbegin_marked(marking_flag<Flag> f = marking_flag<Flag>())
+  reverse_marked_iterator rbegin_marked(Flag f = Flag())
   {
     return reverse_marked_iterator(end_marked(f));
   }
 
-  const_reverse_marked_iterator
-  rbegin_marked(marking_flag<Flag> f = marking_flag<Flag>()) const
+  const_reverse_marked_iterator rbegin_marked(Flag f = Flag()) const
   {
     return const_reverse_marked_iterator(end_marked(f));
   }
 
-  reverse_marked_iterator
-  rend_marked(marking_flag<Flag> f = marking_flag<Flag>())
+  reverse_marked_iterator rend_marked(Flag f = Flag())
   {
     return reverse_marked_iterator(begin_marked(f));
   }
 
-  const_reverse_marked_iterator
-  rend_marked(marking_flag<Flag> f = marking_flag<Flag>()) const
+  const_reverse_marked_iterator rend_marked(Flag f = Flag()) const
   {
     return const_reverse_marked_iterator(begin_marked(f));
   }
@@ -429,7 +414,7 @@ public:
         break;
     }
 
-    assert(!!x && marked(x, marking_flag<Flag>()));
+    assert(!!x && marked(x, Flag()));
 
     return x;
   }
@@ -455,7 +440,12 @@ public:
   }
 
 protected:
-  explicit marking(const allocator_type& allocator = allocator_type())
+  marking()
+  : base()
+  {
+  }
+
+  explicit marking(const allocator_type& allocator)
   : base(allocator)
   {
   }
@@ -477,15 +467,15 @@ protected:
 
   void erase(const_tree_iterator position, const_tree_iterator sub)
   {
-    unmark(position, marking_flag<Flag>());
+    unmark(position, Flag());
 
-    if (marked(sub, marking_flag<Flag>()))
+    if (marked(sub, Flag()))
     {
-      unmark(sub, marking_flag<Flag>());
+      unmark(sub, Flag());
 
       base::erase(position, sub);
 
-      mark(sub, marking_flag<Flag>());
+      mark(sub, Flag());
     }
     else
     {
@@ -495,7 +485,7 @@ protected:
 
   void erase(const_tree_iterator position)
   {
-    unmark(position, marking_flag<Flag>());
+    unmark(position, Flag());
 
     base::erase(position);
   }
@@ -508,8 +498,8 @@ protected:
   // $   b   c    a   b   $
   tree_iterator rotate_left(const_tree_iterator x)
   {
-    bool x_marked = marked(x, marking_flag<Flag>());
-    bool y_marked = marked(right(x), marking_flag<Flag>());
+    bool x_marked = marked(x, Flag());
+    bool y_marked = marked(right(x), Flag());
 
     tree_iterator y = base::rotate_left(x);
 
@@ -527,8 +517,8 @@ protected:
   // $ a   b        b   c $
   tree_iterator rotate_right(const_tree_iterator x)
   {
-    const bool x_marked = marked(x, marking_flag<Flag>());
-    const bool y_marked = marked(left(x), marking_flag<Flag>());
+    const bool x_marked = marked(x, Flag());
+    const bool y_marked = marked(left(x), Flag());
 
     tree_iterator y = base::rotate_right(x);
 
@@ -538,8 +528,7 @@ protected:
     return y;
   }
 
-  static auto metadata(const_tree_iterator x)
-    -> decltype(base::metadata(x).second())
+  static typename ref_or_void<M>::type metadata(const_tree_iterator x)
   {
     return base::metadata(x).second();
   }
@@ -553,7 +542,12 @@ private:
 
 } // mixin
 
-template <std::size_t Flag = 0> class Marking
+enum default_marking_color_t
+{
+  default_marking_color
+};
+
+template <typename Flag = default_marking_color_t> class Marking
 {
 public:
   template <typename T,

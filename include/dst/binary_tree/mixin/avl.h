@@ -105,8 +105,7 @@ protected:
     after_erasing(p, left_erasing);
   }
 
-  static auto metadata(const_tree_iterator x)
-    -> decltype(base::metadata(x).second())
+  static typename ref_or_void<M>::type metadata(const_tree_iterator x)
   {
     return base::metadata(x).second();
   }

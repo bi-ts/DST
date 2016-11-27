@@ -63,7 +63,7 @@ public:
 
     assert(x_to_root_path_.back() == y_to_root_path_.back());
 
-    auto it_x = x_to_root_path_.crbegin(); 
+    auto it_x = x_to_root_path_.crbegin();
     auto it_y = y_to_root_path_.crbegin();
 
     for (; it_x != x_to_root_path_.crend() && it_y != y_to_root_path_.crend();
@@ -91,6 +91,11 @@ public:
   }
 
 protected:
+  ordering()
+  : base()
+  {
+  }
+
   explicit ordering(const allocator_type& allocator)
   : base(allocator)
   {
@@ -126,4 +131,3 @@ public:
 } // binary_tree
 
 } // dst
-
