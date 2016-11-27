@@ -1,3 +1,9 @@
+
+//          Copyright Maksym V. Bilinets 2015 - 2016.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt )
+
 #pragma once
 
 #include <dst/binary_tree/algorithm.h>
@@ -35,7 +41,7 @@ int check_avl_subtree_invariant(std::vector<BinaryTreeIterator>& bad_nodes,
 
   return height;
 }
-}
+} // detail
 
 template <typename Container>
 bool avl_invariant_holds(Container container, bool print_to_stdout = true)
@@ -56,4 +62,4 @@ bool avl_invariant_holds(Container container, bool print_to_stdout = true)
 
   return bad_nodes.size() == 0;
 }
-}
+} // dst_test
