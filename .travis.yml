@@ -5,8 +5,8 @@ matrix:
       osx_image: xcode7.3
       compiler: clang
 before_script:
-  # - brew update
-  # - brew outdated cmake || brew install cmake
+  - brew update
+  - brew outdated cmake || brew upgrade cmake
   - cmake --version
 script:
   - mkdir build
