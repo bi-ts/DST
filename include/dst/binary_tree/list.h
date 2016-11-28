@@ -166,9 +166,17 @@ public:
   {
     auto pos = iterator(base::iterator_const_cast(position.base()));
 
-    for (size_type i = 0; i < n; ++i)
+    try
     {
-      pos = emplace(pos, v);
+      for (size_type i = 0; i < n; ++i)
+      {
+        pos = emplace(pos, v);
+      }
+    }
+    catch (...)
+    {
+      erase(pos, position);
+      throw;
     }
 
     return pos;
@@ -176,19 +184,26 @@ public:
 
   template <typename InputIterator,
             typename = enable_for_input_iterator<InputIterator>>
-  iterator
-  insert(const_iterator position, InputIterator from, InputIterator to)
+  iterator insert(const_iterator position, InputIterator from, InputIterator to)
   {
     auto pos = iterator(base::iterator_const_cast(position.base()));
 
-    if (from != to)
+    try
     {
-      pos = emplace(position, *(from++));
-    }
+      if (from != to)
+      {
+        pos = emplace(position, *(from++));
+      }
 
-    for (; from != to; ++from)
+      for (; from != to; ++from)
+      {
+        emplace(position, *from);
+      }
+    }
+    catch (...)
     {
-      emplace(position, *from);
+      erase(pos, position);
+      throw;
     }
 
     return pos;
@@ -223,8 +238,7 @@ public:
     return insert_after(position, std::begin(init), std::end(init));
   }
 
-  iterator
-  insert_after(const_iterator position, size_type n, const_reference v)
+  iterator insert_after(const_iterator position, size_type n, const_reference v)
   {
     auto pos = iterator(base::iterator_const_cast(position.base()));
 
