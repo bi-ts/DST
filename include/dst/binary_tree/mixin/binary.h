@@ -12,12 +12,13 @@
 #include <dst/binary_tree/mixin.h>
 #include <dst/utility.h>
 
-#include <algorithm> // std::for_each
+#include <algorithm> // std::min
 #include <cassert>
-#include <initializer_list>
 #include <iterator>
-#include <memory>  // std::allocator, std::allocator_traits, std::addressof
-#include <utility> // std::swap
+#include <limits>
+#include <memory> // std::allocator_traits
+#include <type_traits>
+#include <utility>
 
 namespace dst
 {
@@ -500,7 +501,11 @@ protected:
     using node_allocator_type =
       typename std::allocator_traits<Allocator>::template rebind_alloc<node>;
 
-    return node_allocator_type(*this).max_size();
+    node_allocator_type node_allocator(*this);
+
+    return std::min<size_type>(
+      std::allocator_traits<node_allocator_type>::max_size(node_allocator),
+      std::numeric_limits<difference_type>::max());
   }
 
   bool empty() const
