@@ -391,6 +391,26 @@ public:
   {
     lhs.swap(rhs);
   }
+
+  template <typename Predicate> void remove_if(Predicate p)
+  {
+    auto position = cbegin();
+    auto last = cend();
+    while (position != last)
+    {
+      const auto prev = position++;
+      if (p(*prev))
+        erase(prev);
+    }
+  }
+
+  void remove(const_reference value)
+  {
+    remove_if([value](const_reference v)
+              {
+                return v == value;
+              });
+  }
 };
 
 } // binary_tree
