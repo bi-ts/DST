@@ -212,6 +212,9 @@ protected:
   using value_type = T;
   using reference = T&;
   using const_reference = const T&;
+  using pointer = typename std::allocator_traits<Allocator>::pointer;
+  using const_pointer =
+    typename std::allocator_traits<Allocator>::const_pointer;
   using iterator = iterator_base<tree_iterator>;
   using const_iterator = iterator_base<const_tree_iterator>;
   using difference_type =
