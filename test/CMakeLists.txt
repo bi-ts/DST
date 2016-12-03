@@ -39,5 +39,5 @@ target_include_directories(dst_test PRIVATE "${Boost_INCLUDE_DIRS}")
 
 target_link_libraries(dst_test dst)
 
-add_test(NAME dst_test COMMAND dst_test --log_level=test_suite)
+add_test(NAME dst_test COMMAND dst_test)
 
