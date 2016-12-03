@@ -1,16 +1,17 @@
 
+#          Copyright Maksym V. Bilinets 2015 - 2016.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt )
+
 cmake_minimum_required(VERSION 3.4)
 
-find_package(Boost 1.61.0)
+find_package(Boost 1.61.0 EXACT QUIET)
 
 if(NOT Boost_FOUND)
-  message(STATUS "Getting Boost...")
-
   include(get_boost)
 
   get_boost(1.61.0 015ae4afa6f3e597232bfe1dab949ace) 
-
-  find_package(Boost 1.61.0 REQUIRED)
 endif()
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
