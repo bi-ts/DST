@@ -441,6 +441,11 @@ public:
       erase(it, end());
     }
   }
+  
+  void reverse()
+  {
+    std::reverse(begin(), end());
+  }
 };
 
 } // binary_tree
