@@ -427,6 +427,20 @@ public:
                 return v == value;
               });
   }
+
+  void resize(size_type count, value_type value = value_type())
+  {
+    if (size() < count)
+    {
+      insert(end(), count - size(), value);
+    }
+    else if (size() > count)
+    {
+      auto it = begin();
+      std::advance(it, count);
+      erase(it, end());
+    }
+  }
 };
 
 } // binary_tree
