@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <memory> // std::allocator_traits
+
 namespace dst
 {
 
@@ -93,27 +95,47 @@ public:
 protected:
   ordering()
   : base()
+  , x_to_root_path_(base::get_allocator())
+  , y_to_root_path_(base::get_allocator())
   {
   }
 
   explicit ordering(const allocator_type& allocator)
   : base(allocator)
+  , x_to_root_path_(allocator)
+  , y_to_root_path_(allocator)
   {
   }
 
   explicit ordering(const ordering& other, const allocator_type& allocator)
   : base(other, allocator)
+  , x_to_root_path_(allocator)
+  , y_to_root_path_(allocator)
   {
   }
 
   ordering(ordering&& other, const allocator_type& allocator)
   : base(std::move(other), allocator)
+  , x_to_root_path_(allocator)
+  , y_to_root_path_(allocator)
+  {
+  }
+
+  ordering(const initializer_tree<T>& init, const allocator_type& allocator)
+  : base(init, allocator)
+  , x_to_root_path_(allocator)
+  , y_to_root_path_(allocator)
   {
   }
 
 private:
-  mutable std::vector<const_tree_iterator> x_to_root_path_;
-  mutable std::vector<const_tree_iterator> y_to_root_path_;
+  using path_container =
+    std::vector<const_tree_iterator,
+                typename std::allocator_traits<
+                  allocator_type>::template rebind_alloc<const_tree_iterator>>;
+
+  mutable path_container x_to_root_path_;
+  mutable path_container y_to_root_path_;
 };
 
 } // mixin

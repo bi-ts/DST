@@ -28,6 +28,7 @@ add_executable(dst_test
   binary_tree/test_avl.cpp
   binary_tree/test_initializer_tree.cpp
   binary_tree/test_marking.cpp
+  binary_tree/test_ordering.cpp
   binary_tree/test_write_graphviz.cpp
   binary_tree/tools/trees_generator.cpp
   binary_tree/tools/trees_generator.h
