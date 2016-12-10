@@ -42,7 +42,7 @@ using rgb_tree = dst::binary_tree::tree<int,
                                         dst::binary_tree::Marking<green_t>,
                                         dst::binary_tree::Marking<blue_t>>;
 
-BOOST_AUTO_TEST_SUITE(test_binary_tree_avl)
+BOOST_AUTO_TEST_SUITE(test_binary_tree_marking)
 
 BOOST_AUTO_TEST_CASE(test_rgb_tree_rotations)
 {
