@@ -13,10 +13,11 @@
 namespace dst_test
 {
 
-using ordering_tree = dst::binary_tree::balanced_tree<int,
-                                             dst::counter_allocator<int>,
-                                             dst::binary_tree::AVL,
-                                             dst::binary_tree::Ordering>;
+using ordering_tree =
+  dst::binary_tree::balanced_tree<int,
+                                  dst::counter_allocator<int>,
+                                  dst::binary_tree::AVL,
+                                  dst::binary_tree::Ordering>;
 
 BOOST_AUTO_TEST_SUITE(test_binary_tree_ordering)
 
