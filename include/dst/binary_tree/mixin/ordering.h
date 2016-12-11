@@ -26,6 +26,9 @@ class ordering : public Base<T, M, Allocator>
 private:
   using base = Base<T, M, Allocator>;
 
+  static_assert(is_balanced_binary_tree<typename base::tree_category>::value,
+                "Ordering mixin must be based on a balanced binary tree");
+
 protected:
   using typename base::const_tree_iterator;
   using typename base::const_iterator;
@@ -116,13 +119,6 @@ protected:
 
   ordering(ordering&& other, const allocator_type& allocator)
   : base(std::move(other), allocator)
-  , x_to_root_path_(allocator)
-  , y_to_root_path_(allocator)
-  {
-  }
-
-  ordering(const initializer_tree<T>& init, const allocator_type& allocator)
-  : base(init, allocator)
   , x_to_root_path_(allocator)
   , y_to_root_path_(allocator)
   {
