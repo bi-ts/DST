@@ -33,9 +33,6 @@ private:
   static_assert(is_balanced_binary_tree<typename base::tree_category>::value,
                 "Must be balanced");
 
-  static_assert(std::is_same<T, typename Allocator::value_type>::value,
-                "Allocator's `value_type` must be `T`");
-
 public:
   using typename base::tree_iterator;
   using typename base::const_tree_iterator;

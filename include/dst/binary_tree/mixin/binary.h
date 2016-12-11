@@ -36,6 +36,9 @@ template <typename T,
 class binary : public Allocator, public Base<T, M, Allocator>
 {
 private:
+  static_assert(std::is_same<T, typename Allocator::value_type>::value,
+                "Allocator's `value_type` must be `T`");
+
   struct node;
 
   using node_pointer = typename std::allocator_traits<
