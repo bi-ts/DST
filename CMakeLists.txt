@@ -18,7 +18,7 @@ add_library(dst INTERFACE)
 
 target_include_directories(dst INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:../include>
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include DESTINATION .)

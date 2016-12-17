@@ -11,8 +11,9 @@ before_script:
 script:
   - mkdir build
   - cd build
-  - cmake -G"Xcode" ..
+  - cmake -DCMAKE_INSTALL_PREFIX="../install" -G"Xcode" ..
   - cmake --build . --config Release
   - ctest -V -C Release .
   - cmake --build . --config Debug
   - ctest -V -C Debug .
+  - cmake --build . --target install
