@@ -1,21 +1,30 @@
 language: cpp
 matrix:
   include:
-    - os: osx
-      osx_image: xcode7.3
-      compiler: clang
+  - os: osx
+    osx_image: xcode7.3
+    compiler: clang
 before_script:
-  - brew update
-  - brew outdated cmake || brew upgrade cmake
-  - cmake --version
+- brew update
+- brew outdated cmake || brew upgrade cmake
+- cmake --version
 script:
-  - mkdir build
-  - cd build
-  - cmake -DCMAKE_INSTALL_PREFIX="../dst-$TRAVIS_TAG" -G"Xcode" ..
-  - cmake --build . --config Release
-  - ctest -V -C Release .
-  - cmake --build . --config Debug
-  - ctest -V -C Debug .
-  - cmake --build . --target install
-  - cd ..
-  - zip -r -X "dst-$TRAVIS_TAG.zip" "dst-$TRAVIS_TAG"
+- mkdir build
+- cd build
+- cmake -DCMAKE_INSTALL_PREFIX="../dst-$TRAVIS_TAG" -G"Xcode" ..
+- cmake --build . --config Release
+- ctest -V -C Release .
+- cmake --build . --config Debug
+- ctest -V -C Debug .
+- cmake --build . --target install
+- cd ..
+- zip -r -X "dst-$TRAVIS_TAG.zip" "dst-$TRAVIS_TAG"
+deploy:
+  provider: releases
+  api_key:
+    secure: qoezWg9Mci7rYtaLyiiaQOjHOLC6Kp5qmFNy+D8lx05WbZJUpfMJEQIutcwFcEnUmIGErp7WF/cOfgIu3qHRKd/vPjZpyAPRGHcauMXd/n2BMLxx2JZoLHTHJN5wq3AlkVzYJrnENP2CqsU4t9UpmzP+Kfak2MgNexUVSbiuEMCEH3Olu7yfzEqs/qC3ewejTH/Yrzfvfj0lXucAxxO9GL7vKTtA87IVTwUbhnRw/oeNmX6/Axfcga40geFqruLkxrhTKjchjIxeCU6ppRNonNb+SlexjPHPLd2/Yq8Kq/xUypbOV1pMNFPrXL61K/M0e+kbk6H3XqaQtsTl9ix4t5fJ2Khb6Lh61vnqUVdTzOBzA7uLOvoABvLxRGQYrlNVCvqxuC9Qn0vDjtVa+9aWoa4+8eIp0IzVRTRhhlRZXt9ZQAfezDGNyzEqgG1Z0qU+PXrDiNouKkmfrbLc6NNFAmrq5Xs8gz9kD0Sedv+JrmrsOpMr/3M8gqCHPDRxwmLtRv2Z70xhWJjuRxHhzljxw9IG/r0frAPd7sAF0b4SBv/pB3QNykHK1cvCeRBH7vn5GrXw9rWNEVNozTfIPqPLtzcaZ7z99dGhIHbgSIpg/7Lpjywrwz+7C4Yow+2jaIUNcK292DwaCREoYRVfiqhq/tCGAuNTruPgFBHzt7yOAPo=
+  file: "dst-$TRAVIS_TAG.zip"
+  skip_cleanup: true
+  overwrite: true
+  on:
+    tags: true
