@@ -11,9 +11,11 @@ before_script:
 script:
   - mkdir build
   - cd build
-  - cmake -DCMAKE_INSTALL_PREFIX="../install" -G"Xcode" ..
+  - cmake -DCMAKE_INSTALL_PREFIX="../dst-@TRAVIS_TAG" -G"Xcode" ..
   - cmake --build . --config Release
   - ctest -V -C Release .
   - cmake --build . --config Debug
   - ctest -V -C Debug .
   - cmake --build . --target install
+  - cd ..
+  - zip -r -X "dst-$TRAVIS_TAG.zip" "dst-@TRAVIS_TAG"
