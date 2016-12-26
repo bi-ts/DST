@@ -21,7 +21,7 @@ template <typename T, typename Allocator, typename... Args>
 typename std::enable_if<
   !std::is_same<typename std::allocator_traits<Allocator>::value_type,
                 T>::value>::type
-construct(const Allocator& alloc, T& obj, Args&&... args)
+construct(Allocator alloc, T& obj, Args&&... args)
 {
   using allocator_type =
     typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
@@ -36,7 +36,7 @@ template <typename T, typename Allocator, typename... Args>
 typename std::enable_if<
   std::is_same<typename std::allocator_traits<Allocator>::value_type,
                T>::value>::type
-construct(const Allocator& alloc, T& obj, Args&&... args)
+construct(Allocator alloc, T& obj, Args&&... args)
 {
   std::allocator_traits<Allocator>::construct(
     alloc, std::addressof(obj), std::forward<Args>(args)...);
@@ -46,7 +46,7 @@ template <typename T, typename Allocator>
 typename std::enable_if<
   !std::is_same<typename std::allocator_traits<Allocator>::value_type,
                 T>::value>::type
-destroy(const Allocator& alloc, T& obj)
+destroy(Allocator alloc, T& obj)
 {
   using allocator_type =
     typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
@@ -61,7 +61,7 @@ template <typename T, typename Allocator>
 typename std::enable_if<
   std::is_same<typename std::allocator_traits<Allocator>::value_type,
                T>::value>::type
-destroy(const Allocator& alloc, T& obj)
+destroy(Allocator alloc, T& obj)
 {
   std::allocator_traits<Allocator>::destroy(alloc, std::addressof(obj));
 }
@@ -129,8 +129,7 @@ new_object(const Allocator& alloc, Args&&... args)
 
   try
   {
-    std::allocator_traits<allocator_type>::construct(
-      allocator, std::addressof(*p_object), std::forward<Args>(args)...);
+    construct(allocator, *p_object, std::forward<Args>(args)...);
   }
   catch (...)
   {
@@ -154,8 +153,7 @@ void delete_object(const Allocator& alloc,
 
   try
   {
-    std::allocator_traits<allocator_type>::destroy(allocator,
-                                                   std::addressof(*p_object));
+    destroy(allocator, *p_object);
   }
   catch (...)
   {

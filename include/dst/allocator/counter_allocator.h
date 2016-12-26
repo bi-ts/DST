@@ -20,6 +20,7 @@ public:
   using base_allocator_type = Allocator;
 
   using value_type = T;
+  using pointer = typename std::allocator_traits<Allocator>::pointer;
   using size_type = typename std::allocator_traits<Allocator>::size_type;
 
   template <typename U> struct rebind
@@ -54,6 +55,17 @@ public:
     assert(*p_counter_ >= n * sizeof(T));
     (*p_counter_) -= n * sizeof(T);
     base_().deallocate(p, n);
+  }
+
+  template <typename... Args> void construct(pointer p, Args&&... args)
+  {
+    std::allocator_traits<base_allocator_type>::construct(
+      *this, p, std::forward<Args>(args)...);
+  }
+
+  void destroy(pointer p)
+  {
+    std::allocator_traits<base_allocator_type>::destroy(*this, p);
   }
 
   template <typename U, typename A, typename V, typename B>
@@ -100,4 +112,3 @@ bool operator!=(const counter_allocator<U, A>& lhs,
 }
 
 } // dst
-
