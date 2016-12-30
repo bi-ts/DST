@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <cstddef> // std::size_t, std::uint8_t
+#include <limits>  // std::numeric_limits
 #include <memory>  // std::allocator_traits, std::addressof
 #include <utility> // std::forward
 
@@ -71,23 +72,25 @@ void* allocate_aligned(const Allocator& alloc,
                        std::size_t size,
                        std::size_t alignment)
 {
+  assert(alignment <= std::numeric_limits<std::uint8_t>::max());
+
   using allocator_type = typename std::allocator_traits<
     Allocator>::template rebind_alloc<std::uint8_t>;
 
   allocator_type allocator(alloc);
 
-  const auto p_mem_block = allocator.allocate(size + alignment);
+  std::uint8_t* const p_mem_block = allocator.allocate(size + alignment);
 
-  const auto offset =
+  const std::size_t offset =
     alignment - reinterpret_cast<std::uintptr_t>(p_mem_block) % alignment;
 
   const auto p_object = p_mem_block + offset;
 
-  const auto p_meta_data = p_object - 1;
+  std::uint8_t* const p_meta_data = p_object - 1;
 
   assert(p_meta_data < p_object && p_meta_data >= p_mem_block);
 
-  *p_meta_data = offset;
+  *p_meta_data = static_cast<std::uint8_t>(offset);
 
   return p_object;
 }
@@ -98,15 +101,17 @@ void deallocate_aligned(const Allocator& alloc,
                         std::size_t size,
                         std::size_t alignment)
 {
-  const auto p_object_bytes = static_cast<std::uint8_t*>(p_object);
+  assert(alignment <= std::numeric_limits<std::uint8_t>::max());
 
-  const auto p_meta_data = p_object_bytes - 1;
+  std::uint8_t* const p_object_bytes = static_cast<std::uint8_t*>(p_object);
+
+  std::uint8_t* const p_meta_data = p_object_bytes - 1;
 
   const std::size_t offset = *p_meta_data;
 
   assert(offset <= alignment);
 
-  const auto p_mem_block = p_object_bytes - offset;
+  std::uint8_t* const p_mem_block = p_object_bytes - offset;
 
   using allocator_type = typename std::allocator_traits<
     Allocator>::template rebind_alloc<std::uint8_t>;
