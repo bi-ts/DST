@@ -1,9 +1,4 @@
 
-#          Copyright Maksym V. Bilinets 2015 - 2016.
-# Distributed under the Boost Software License, Version 1.0.
-#    (See accompanying file LICENSE_1_0.txt or copy at
-#          http://www.boost.org/LICENSE_1_0.txt )
-
 cmake_minimum_required(VERSION 3.4)
 
 set(_input_file "${CMAKE_CURRENT_LIST_DIR}/get_boost/CMakeLists.txt.in")
@@ -50,3 +45,4 @@ macro(get_boost boost_version boost_md5)
   find_package(Boost ${boost_version} REQUIRED EXACT QUIET)
 
 endmacro()
+
