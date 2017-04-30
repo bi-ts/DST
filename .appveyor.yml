@@ -1,0 +1,16 @@
+
+# Version format
+version: {build}
+
+# Build worker image
+image: Visual Studio 2015
+
+# Custom build script
+build_script:
+  - mkdir build
+  - cd build
+  - cmake --build . --config Release
+  - ctest -V -C Release .
+  - cmake --build . --config Debug
+  - ctest -V -C Debug .
+
