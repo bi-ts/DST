@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.5)
 
 find_package(Boost 1.61.0 EXACT QUIET)
 
@@ -33,7 +33,7 @@ add_executable(dst_test
 
 target_include_directories(dst_test PRIVATE "${Boost_INCLUDE_DIRS}")
 
-target_link_libraries(dst_test dst)
+target_link_libraries(dst_test dst Boost::disable_autolinking)
 
 add_test(NAME dst_test COMMAND dst_test)
 
