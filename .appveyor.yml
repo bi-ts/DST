@@ -1,6 +1,6 @@
 
 # Version format
-version: {build}
+version: "{build}"
 
 # Build worker image
 image: Visual Studio 2015
