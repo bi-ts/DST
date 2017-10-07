@@ -26,6 +26,12 @@ struct throw_in_dtor
 {
   ~throw_in_dtor() noexcept(false)
   {
+    throwing_func_();
+  }
+
+private:
+  static void throwing_func_()
+  {
     throw 0;
   }
 };
