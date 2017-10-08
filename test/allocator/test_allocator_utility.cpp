@@ -26,13 +26,11 @@ struct throw_in_dtor
 {
   ~throw_in_dtor() noexcept(false)
   {
-    throwing_func_();
-  }
-
-private:
-  static void throwing_func_()
-  {
-    throw 0;
+    if (this) // Suppress warning (Visual Studio 14):
+              // "destructor never returns, potential memory leak".
+    {
+      throw 0;
+    }
   }
 };
 
