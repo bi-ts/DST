@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2017.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(load_test_insert)
     auto tree = init_avl_tree({t, hight + 1, fib_tree});
 
     BOOST_TEST(topologically_equal(t.root(), left(tree.root())));
-    BOOST_TEST(dst_test::avl_invariant_holds(tree));
+    BOOST_TEST(avl_invariant_holds(tree));
 
     for (std::size_t i = 0; i < t.size(); ++i)
     {
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(load_test_insert)
 
         tree_copy.insert_left(it.base(), 0);
 
-        const auto invariant_holds = dst_test::avl_invariant_holds(tree_copy);
+        const auto invariant_holds = avl_invariant_holds(tree_copy);
 
         if (!invariant_holds)
         {
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(load_test_insert)
 
         tree_copy.insert_right(it.base(), 0);
 
-        const auto invariant_holds = dst_test::avl_invariant_holds(tree_copy);
+        const auto invariant_holds = avl_invariant_holds(tree_copy);
 
         if (!invariant_holds)
         {
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(load_test_erase)
     auto tree = init_avl_tree({t, hight + 1, fib_tree});
 
     BOOST_TEST(topologically_equal(t.root(), left(tree.root())));
-    BOOST_TEST(dst_test::avl_invariant_holds(tree));
+    BOOST_TEST(avl_invariant_holds(tree));
 
     for (std::size_t i = 0; i < t.size(); ++i)
     {
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(load_test_erase)
       else
         tree_copy.erase(it.base(), successor(it.base()));
 
-      const auto invariant_holds = dst_test::avl_invariant_holds(tree_copy);
+      const auto invariant_holds = avl_invariant_holds(tree_copy);
 
       if (!invariant_holds)
       {
