@@ -21,6 +21,7 @@ add_executable(dst_test
   allocator/test_global_counter_allocator.cpp
   binary_tree/test_algorithm.cpp
   binary_tree/test_avl.cpp
+  binary_tree/test_indexing.cpp
   binary_tree/test_initializer_tree.cpp
   binary_tree/test_marking.cpp
   binary_tree/test_ordering.cpp

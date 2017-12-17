@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2017.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -25,8 +25,8 @@ template <
 void write_graphviz(std::ostream& out,
                     BinaryTreeBranchIterator x,
                     const F& f,
-                    ForwardIterator from = nullptr,
-                    ForwardIterator to = nullptr)
+                    ForwardIterator from = ForwardIterator(),
+                    ForwardIterator to = ForwardIterator())
 {
   out << "digraph G {" << std::endl;
 
