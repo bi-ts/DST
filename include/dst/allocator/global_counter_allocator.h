@@ -53,8 +53,8 @@ public:
   {
   }
 
-  template <class U>
-  global_counter_allocator(const global_counter_allocator<U>& other)
+  template <class U, class A>
+  global_counter_allocator(const global_counter_allocator<U, A>& other)
   : Allocator(other.base())
   {
   }
