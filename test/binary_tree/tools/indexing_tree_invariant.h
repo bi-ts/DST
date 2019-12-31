@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2017.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -52,14 +52,14 @@ bool indexing_invariant_holds(Container container, bool print_to_stdout = true)
   {
     std::cout << "Bad Indexing tree:" << std::endl;
 
-    dst::binary_tree::write_graphviz(std::cout,
-                                     container.root(),
-                                     [](typename Container::tree_iterator x)
-                                     {
-                                       return Container::subtree_size(x);
-                                     },
-                                     bad_nodes.begin(),
-                                     bad_nodes.end());
+    dst::binary_tree::write_graphviz(
+      std::cout,
+      container.root(),
+      [](typename Container::tree_iterator x) {
+        return Container::subtree_size(x);
+      },
+      bad_nodes.begin(),
+      bad_nodes.end());
   }
 
   return bad_nodes.size() == 0;

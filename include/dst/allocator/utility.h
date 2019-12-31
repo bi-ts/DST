@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -147,9 +147,10 @@ new_object(const Allocator& alloc, Args&&... args)
 }
 
 template <typename T, typename Allocator>
-void delete_object(const Allocator& alloc,
-                   typename std::allocator_traits<
-                     Allocator>::template rebind_traits<T>::pointer p_object)
+void delete_object(
+  const Allocator& alloc,
+  typename std::allocator_traits<Allocator>::template rebind_traits<T>::pointer
+    p_object)
 {
   using allocator_type =
     typename std::allocator_traits<Allocator>::template rebind_alloc<T>;

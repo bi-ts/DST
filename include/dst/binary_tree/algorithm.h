@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -244,10 +244,10 @@ bool order(BinaryTreeIterator x, BinaryTreeIterator y)
 
 template <typename BinaryTreeIterator>
 class inorder_depth_first_search_iterator
-  : public iterator_facade<
-      inorder_depth_first_search_iterator<BinaryTreeIterator>,
-      std::forward_iterator_tag,
-      typename std::iterator_traits<BinaryTreeIterator>::value_type>
+: public iterator_facade<
+    inorder_depth_first_search_iterator<BinaryTreeIterator>,
+    std::forward_iterator_tag,
+    typename std::iterator_traits<BinaryTreeIterator>::value_type>
 {
 private:
   friend iterator_facade<
@@ -316,10 +316,10 @@ end_inorder_depth_first_search(BinaryTreeIterator last)
 
 template <typename BinaryTreeIterator>
 class postorder_depth_first_search_iterator
-  : public iterator_facade<
-      postorder_depth_first_search_iterator<BinaryTreeIterator>,
-      std::forward_iterator_tag,
-      typename std::iterator_traits<BinaryTreeIterator>::value_type>
+: public iterator_facade<
+    postorder_depth_first_search_iterator<BinaryTreeIterator>,
+    std::forward_iterator_tag,
+    typename std::iterator_traits<BinaryTreeIterator>::value_type>
 {
 private:
   friend iterator_facade<

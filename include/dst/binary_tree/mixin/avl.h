@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -24,7 +24,8 @@ namespace mixin
 template <typename T,
           typename M,
           typename Allocator,
-          template <typename, typename, typename> class Base>
+          template <typename, typename, typename>
+          class Base>
 class avl : public Base<T, pair_or_single<std::int8_t, M>, Allocator>
 {
 private:
@@ -36,8 +37,8 @@ private:
 protected:
   using tree_category = balanced_binary_tree_tag;
 
-  using typename base::tree_iterator;
   using typename base::const_tree_iterator;
+  using typename base::tree_iterator;
 
   using allocator_type = typename base::allocator_type;
 
@@ -254,7 +255,8 @@ public:
   template <typename T,
             typename M,
             typename Allocator,
-            template <typename, typename, typename> class Base>
+            template <typename, typename, typename>
+            class Base>
   using type = mixin::avl<T, M, Allocator, Base>;
 };
 

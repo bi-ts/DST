@@ -1,11 +1,11 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
 
-#include <dst/binary_tree/tree.h>
 #include <dst/binary_tree/algorithm.h>
+#include <dst/binary_tree/tree.h>
 
 #include <boost/test/unit_test.hpp>
 
@@ -215,4 +215,3 @@ BOOST_AUTO_TEST_CASE(test_postorder_depth_first_search)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

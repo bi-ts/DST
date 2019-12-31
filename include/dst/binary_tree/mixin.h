@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -25,8 +25,7 @@ struct balanced_binary_tree_tag
 namespace detail
 {
 
-template <typename, typename, typename>
-class mixin_stub
+template <typename, typename, typename> class mixin_stub
 {
 };
 
@@ -34,7 +33,8 @@ template <template <typename, typename, typename> class Base,
           template <typename,
                     typename,
                     typename,
-                    template <typename, typename, typename> class>
+                    template <typename, typename, typename>
+                    class>
           class... List>
 class fold_mixins;
 
@@ -42,11 +42,14 @@ template <template <typename, typename, typename> class Base,
           template <typename,
                     typename,
                     typename,
-                    template <typename, typename, typename> class> class Head,
+                    template <typename, typename, typename>
+                    class>
+          class Head,
           template <typename,
                     typename,
                     typename,
-                    template <typename, typename, typename> class>
+                    template <typename, typename, typename>
+                    class>
           class... Tail>
 class fold_mixins<Base, Head, Tail...>
 {
@@ -64,7 +67,9 @@ template <template <typename, typename, typename> class Base,
           template <typename,
                     typename,
                     typename,
-                    template <typename, typename, typename> class> class Head>
+                    template <typename, typename, typename>
+                    class>
+          class Head>
 class fold_mixins<Base, Head>
 {
 public:
@@ -82,14 +87,13 @@ public:
 
 }
 
-template <typename... Mixins>
-class fold_mixins
+template <typename... Mixins> class fold_mixins
 {
 public:
   template <typename T, typename M, typename Allocator>
-  using type = typename detail::fold_mixins<
-    detail::mixin_stub,
-    Mixins::template type...>::template type<T, M, Allocator>;
+  using type =
+    typename detail::fold_mixins<detail::mixin_stub, Mixins::template type...>::
+      template type<T, M, Allocator>;
 };
 
 } // binary_tree
@@ -103,4 +107,3 @@ using is_unbalanced_binary_tree =
   std::is_convertible<TreeCategory, binary_tree::unbalanced_binary_tree_tag>;
 
 } // dst
-

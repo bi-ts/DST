@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -19,7 +19,7 @@ template <typename T,
           typename Allocator = std::allocator<T>,
           typename... Mixins>
 class tree
-  : public fold_mixins<Binary, Mixins...>::template type<T, void, Allocator>
+: public fold_mixins<Binary, Mixins...>::template type<T, void, Allocator>
 {
 private:
   using base =
@@ -29,35 +29,35 @@ private:
                 "Must be unbalanced");
 
 public:
-  using typename base::tree_iterator;
   using typename base::const_tree_iterator;
+  using typename base::tree_iterator;
 
-  using typename base::value_type;
-  using typename base::reference;
-  using typename base::iterator;
   using typename base::const_iterator;
   using typename base::const_reference;
   using typename base::difference_type;
+  using typename base::iterator;
+  using typename base::reference;
   using typename base::size_type;
+  using typename base::value_type;
 
   using allocator_type = typename base::allocator_type;
 
 public:
-  using base::get_allocator;
-  using base::root;
-  using base::nil;
   using base::begin;
-  using base::end;
+  using base::clear;
   using base::emplace_left;
   using base::emplace_right;
-  using base::erase;
-  using base::clear;
-  using base::swap;
-  using base::size;
-  using base::max_size;
   using base::empty;
+  using base::end;
+  using base::erase;
+  using base::get_allocator;
+  using base::max_size;
+  using base::nil;
+  using base::root;
   using base::rotate_left;
   using base::rotate_right;
+  using base::size;
+  using base::swap;
 
 public:
   explicit tree(const allocator_type& allocator = allocator_type())
@@ -126,4 +126,3 @@ public:
 } // binary_tree
 
 } // dst
-

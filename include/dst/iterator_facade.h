@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -28,7 +28,7 @@ class iterator_facade;
 
 template <typename Derived, typename T>
 class iterator_facade<Derived, std::output_iterator_tag, T>
-  : public std::iterator<std::output_iterator_tag, void, void, void, void>
+: public std::iterator<std::output_iterator_tag, void, void, void, void>
 {
 public:
   iterator_facade& operator*()
@@ -72,7 +72,7 @@ private:
 
 template <typename Derived, typename T>
 class iterator_facade<Derived, std::forward_iterator_tag, T>
-  : public std::iterator<std::forward_iterator_tag, T>
+: public std::iterator<std::forward_iterator_tag, T>
 {
 public:
   typename iterator_facade::reference operator*() const
@@ -120,7 +120,7 @@ private:
 
 template <typename Derived, typename T>
 class iterator_facade<Derived, std::bidirectional_iterator_tag, T>
-  : public std::iterator<std::bidirectional_iterator_tag, T>
+: public std::iterator<std::bidirectional_iterator_tag, T>
 {
 public:
   typename iterator_facade::reference operator*() const
@@ -183,4 +183,3 @@ private:
 };
 
 } // dst
-

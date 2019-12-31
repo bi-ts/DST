@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -23,9 +23,9 @@ private:
 
 public:
   class const_tree_iterator
-    : public iterator_facade<const_tree_iterator,
-                             binary_tree_branch_iterator_tag,
-                             const T>
+  : public iterator_facade<const_tree_iterator,
+                           binary_tree_branch_iterator_tag,
+                           const T>
   {
   public:
     friend class initializer_tree;

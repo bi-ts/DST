@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -55,14 +55,14 @@ bool marking_invariant_holds(Container container,
   {
     std::cout << "Bad Marking tree:" << std::endl;
 
-    dst::binary_tree::write_graphviz(std::cout,
-                                     container.root(),
-                                     [f](typename Container::tree_iterator x)
-                                     {
-                                       return Container::marked_nodes(x, f);
-                                     },
-                                     bad_nodes.begin(),
-                                     bad_nodes.end());
+    dst::binary_tree::write_graphviz(
+      std::cout,
+      container.root(),
+      [f](typename Container::tree_iterator x) {
+        return Container::marked_nodes(x, f);
+      },
+      bad_nodes.begin(),
+      bad_nodes.end());
   }
 
   return bad_nodes.size() == 0;

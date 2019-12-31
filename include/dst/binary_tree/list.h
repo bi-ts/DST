@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -20,32 +20,29 @@ template <typename T,
           typename Allocator = std::allocator<T>,
           typename Mixin = AVL,
           typename... Mixins>
-class list : public fold_mixins<Binary,
-                                Mixin,
-                                Mixins...>::template type<T, void, Allocator>
+class list : public fold_mixins<Binary, Mixin, Mixins...>::
+               template type<T, void, Allocator>
 {
 private:
-  using base =
-    typename fold_mixins<Binary, Mixin, Mixins...>::template type<T,
-                                                                  void,
-                                                                  Allocator>;
+  using base = typename fold_mixins<Binary, Mixin, Mixins...>::
+    template type<T, void, Allocator>;
 
   static_assert(is_balanced_binary_tree<typename base::tree_category>::value,
                 "Must be balanced");
 
 public:
-  using typename base::tree_iterator;
   using typename base::const_tree_iterator;
+  using typename base::tree_iterator;
 
-  using typename base::value_type;
-  using typename base::reference;
-  using typename base::const_reference;
-  using typename base::pointer;
-  using typename base::const_pointer;
-  using typename base::iterator;
   using typename base::const_iterator;
+  using typename base::const_pointer;
+  using typename base::const_reference;
   using typename base::difference_type;
+  using typename base::iterator;
+  using typename base::pointer;
+  using typename base::reference;
   using typename base::size_type;
+  using typename base::value_type;
 
   using reverse_iterator = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
@@ -53,15 +50,15 @@ public:
   using allocator_type = typename base::allocator_type;
 
 public:
-  using base::get_allocator;
-  using base::root;
-  using base::nil;
   using base::begin;
-  using base::end;
   using base::clear;
-  using base::size;
-  using base::max_size;
   using base::empty;
+  using base::end;
+  using base::get_allocator;
+  using base::max_size;
+  using base::nil;
+  using base::root;
+  using base::size;
 
 public:
   list()
@@ -419,10 +416,7 @@ public:
 
   void remove(const_reference value)
   {
-    remove_if([value](const_reference v)
-              {
-                return v == value;
-              });
+    remove_if([value](const_reference v) { return v == value; });
   }
 
   void resize(size_type count, value_type value = value_type())
@@ -438,7 +432,7 @@ public:
       erase(it, end());
     }
   }
-  
+
   void reverse()
   {
     std::reverse(begin(), end());
@@ -448,4 +442,3 @@ public:
 } // binary_tree
 
 } // dst
-

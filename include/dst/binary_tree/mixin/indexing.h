@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2017.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -22,7 +22,8 @@ namespace mixin
 template <typename T,
           typename M,
           typename Allocator,
-          template <typename, typename, typename> class Base>
+          template <typename, typename, typename>
+          class Base>
 class indexing : public Base<T, pair_or_single<std::size_t, M>, Allocator>
 {
 private:
@@ -32,14 +33,14 @@ private:
                 "Base mixin must be unbalanced");
 
 protected:
-  using typename base::tree_iterator;
   using typename base::const_tree_iterator;
+  using typename base::tree_iterator;
 
-  using typename base::reference;
   using typename base::const_reference;
+  using typename base::reference;
 
-  using typename base::iterator;
   using typename base::const_iterator;
+  using typename base::iterator;
 
   using typename base::difference_type;
   using typename base::size_type;
@@ -271,7 +272,8 @@ public:
   template <typename T,
             typename M,
             typename Allocator,
-            template <typename, typename, typename> class Base>
+            template <typename, typename, typename>
+            class Base>
   using type = mixin::indexing<T, M, Allocator, Base>;
 };
 

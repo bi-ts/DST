@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -101,4 +101,3 @@ std::size_t dst_test::number_of_balanced_trees(std::size_t h)
 
   return n * (2 * number_of_balanced_trees(h - 2) + n);
 }
-

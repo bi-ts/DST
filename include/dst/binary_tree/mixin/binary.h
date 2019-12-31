@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -7,8 +7,8 @@
 #pragma once
 
 #include <dst/allocator/utility.h>
-#include <dst/binary_tree/initializer_tree.h>
 #include <dst/binary_tree/algorithm.h>
+#include <dst/binary_tree/initializer_tree.h>
 #include <dst/binary_tree/mixin.h>
 #include <dst/utility.h>
 
@@ -32,7 +32,8 @@ namespace mixin
 template <typename T,
           typename M,
           typename Allocator,
-          template <typename, typename, typename> class Base>
+          template <typename, typename, typename>
+          class Base>
 class binary : public Allocator, public Base<T, M, Allocator>
 {
 private:
@@ -84,7 +85,7 @@ private:
 
   template <typename U>
   class tree_iterator_base
-    : public iterator_facade<tree_iterator_base<U>, binary_tree_iterator_tag, U>
+  : public iterator_facade<tree_iterator_base<U>, binary_tree_iterator_tag, U>
   {
   public:
     friend class binary;
@@ -147,10 +148,10 @@ private:
 
   template <typename BinaryTreeIterator>
   class iterator_base
-    : public iterator_facade<
-        iterator_base<BinaryTreeIterator>,
-        std::bidirectional_iterator_tag,
-        typename std::iterator_traits<BinaryTreeIterator>::value_type>
+  : public iterator_facade<
+      iterator_base<BinaryTreeIterator>,
+      std::bidirectional_iterator_tag,
+      typename std::iterator_traits<BinaryTreeIterator>::value_type>
   {
   private:
     friend iterator_facade<
@@ -801,7 +802,8 @@ public:
   template <typename T,
             typename M,
             typename Allocator,
-            template <typename, typename, typename> class Base>
+            template <typename, typename, typename>
+            class Base>
   using type = mixin::binary<T, M, Allocator, Base>;
 };
 

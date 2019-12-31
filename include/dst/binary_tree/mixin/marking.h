@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -29,7 +29,8 @@ class marking_base_tag
 template <typename T,
           typename M,
           typename Allocator,
-          template <typename, typename, typename> class Base,
+          template <typename, typename, typename>
+          class Base,
           bool>
 class marking_base : public Base<T, M, Allocator>, public marking_base_tag
 {
@@ -91,7 +92,8 @@ protected:
 template <typename T,
           typename M,
           typename Allocator,
-          template <typename, typename, typename> class Base>
+          template <typename, typename, typename>
+          class Base>
 class marking_base<T, M, Allocator, Base, true> : public Base<T, M, Allocator>
 {
 private:
@@ -101,14 +103,14 @@ protected:
   using allocator_type = typename base::allocator_type;
 
 public:
-  using base::mark;
-  using base::unmark;
-  using base::marked;
-  using base::marked_nodes;
   using base::begin_marked;
   using base::end_marked;
+  using base::mark;
+  using base::marked;
+  using base::marked_nodes;
   using base::rbegin_marked;
   using base::rend_marked;
+  using base::unmark;
 
 protected:
   explicit marking_base(const allocator_type& allocator)
@@ -138,14 +140,15 @@ template <typename Flag,
           typename T,
           typename M,
           typename Allocator,
-          template <typename, typename, typename> class Base>
+          template <typename, typename, typename>
+          class Base>
 class marking
-  : public detail::marking_base<
-      T,
-      pair_or_single<std::size_t, M>,
-      Allocator,
-      Base,
-      std::is_base_of<detail::marking_base_tag, Base<T, M, Allocator>>::value>
+: public detail::marking_base<
+    T,
+    pair_or_single<std::size_t, M>,
+    Allocator,
+    Base,
+    std::is_base_of<detail::marking_base_tag, Base<T, M, Allocator>>::value>
 {
 private:
   using base = detail::marking_base<
@@ -157,10 +160,10 @@ private:
 
   template <typename BinaryTreeIterator>
   class marked_iterator_base
-    : public iterator_facade<
-        marked_iterator_base<BinaryTreeIterator>,
-        std::bidirectional_iterator_tag,
-        typename std::iterator_traits<BinaryTreeIterator>::value_type>
+  : public iterator_facade<
+      marked_iterator_base<BinaryTreeIterator>,
+      std::bidirectional_iterator_tag,
+      typename std::iterator_traits<BinaryTreeIterator>::value_type>
   {
   private:
     friend iterator_facade<
@@ -271,15 +274,15 @@ private:
 protected:
   using tree_category = unbalanced_binary_tree_tag;
 
-  using typename base::tree_iterator;
+  using typename base::const_iterator;
   using typename base::const_tree_iterator;
   using typename base::iterator;
-  using typename base::const_iterator;
+  using typename base::tree_iterator;
 
   using allocator_type = typename base::allocator_type;
 
-  using base::root;
   using base::nil;
+  using base::root;
 
   using marked_iterator = marked_iterator_base<tree_iterator>;
   using const_marked_iterator = marked_iterator_base<const_tree_iterator>;
@@ -289,14 +292,14 @@ protected:
     std::reverse_iterator<const_marked_iterator>;
 
 public:
-  using base::mark;
-  using base::unmark;
-  using base::marked;
-  using base::marked_nodes;
   using base::begin_marked;
   using base::end_marked;
+  using base::mark;
+  using base::marked;
+  using base::marked_nodes;
   using base::rbegin_marked;
   using base::rend_marked;
+  using base::unmark;
 
 public:
   bool mark(const_tree_iterator x, Flag f = Flag())
@@ -553,7 +556,8 @@ public:
   template <typename T,
             typename M,
             typename Allocator,
-            template <typename, typename, typename> class Base>
+            template <typename, typename, typename>
+            class Base>
   using type = mixin::marking<Flag, T, M, Allocator, Base>;
 };
 

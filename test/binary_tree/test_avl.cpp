@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2017.
+//          Copyright Maksym V. Bilinets 2015 - 2019.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -28,7 +28,8 @@ avl_tree init_avl_tree(const dst::binary_tree::initializer_tree<int>& init)
   avl_tree tree;
 
   std::queue<std::pair<dst::binary_tree::initializer_tree<int>::tree_iterator,
-                       avl_tree::tree_iterator>> queue;
+                       avl_tree::tree_iterator>>
+    queue;
 
   queue.push(
     std::make_pair(init.root(), tree.insert_left(tree.nil(), *init.root())));
