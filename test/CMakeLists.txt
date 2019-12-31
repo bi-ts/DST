@@ -1,12 +1,12 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-find_package(Boost 1.61.0 EXACT QUIET)
+find_package(Boost 1.72.0 EXACT QUIET)
 
 if(NOT Boost_FOUND)
   include(get_boost)
 
-  get_boost(1.61.0 015ae4afa6f3e597232bfe1dab949ace) 
+  get_boost(1.72.0 93cf8511f2e9b4456e5178cb07fc829d)
 endif()
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
