@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2019.
+//          Copyright Maksym V. Bilinets 2015 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -171,4 +171,16 @@ void delete_object(
   allocator.deallocate(p_object, 1);
 }
 } // memory
+
+/// A function for static downcasting of pointers. Should be used to cast
+/// base class pointers to most-derived class pointers.
+/// For raw pointers it performs simple @c static_cast. Custom pointer types
+/// can overload this function to provide some run-time checks.
+/// @warning This function should never be used via fully qualified name,
+///          like @c dst::down_cast, because otherwise, for custome pointer
+///          types in nested namespaces, argument dependent lookup will fail.
+template <typename T, typename U> T down_cast(const U& ptr)
+{
+  return static_cast<T>(ptr);
+}
 } // dst

@@ -1,0 +1,24 @@
+
+cmake_minimum_required(VERSION 3.4)
+
+project(get-google_test LANGUAGES NONE)
+
+include(ExternalProject)
+
+ExternalProject_add(google_test
+  PREFIX "@EXT_PROJECTS_DIR@/google_test"
+  URL "https://github.com/google/googletest/archive/release-@GOOGLE_TEST_VERSION@.zip"
+  URL_MD5 @GOOGLE_TEST_PACKAGE_MD5@
+  CONFIGURE_COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}"
+                    -DCMAKE_DEBUG_POSTFIX=d
+                    -DCMAKE_INSTALL_PREFIX=../google_test-install
+                    -DBUILD_GMOCK=OFF
+                    -Dgtest_force_shared_crt=ON
+                    ../google_test
+  BUILD_COMMAND     ${CMAKE_COMMAND} --build . --config Release
+        COMMAND     ${CMAKE_COMMAND} --build . --config Debug
+  INSTALL_COMMAND   ${CMAKE_COMMAND} -DCMAKE_INSTALL_CONFIG_NAME=Release -P cmake_install.cmake
+          COMMAND   ${CMAKE_COMMAND} -DCMAKE_INSTALL_CONFIG_NAME=Debug -P cmake_install.cmake
+  TEST_COMMAND      ""
+  )
+
