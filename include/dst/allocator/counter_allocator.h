@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2016.
+//          Copyright Maksym V. Bilinets 2015 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -37,20 +37,20 @@ public:
   {
   }
 
-  template <class U>
-  counter_allocator(const counter_allocator<U>& other)
+  template <class U, class A>
+  counter_allocator(const counter_allocator<U, A>& other)
   : Allocator(other.base())
   , p_counter_(other.p_counter_)
   {
   }
 
-  T* allocate(size_type n)
+  pointer allocate(size_type n)
   {
     (*p_counter_) += n * sizeof(T);
     return base_().allocate(n);
   }
 
-  void deallocate(T* p, size_type n)
+  void deallocate(pointer p, size_type n)
   {
     assert(*p_counter_ >= n * sizeof(T));
     (*p_counter_) -= n * sizeof(T);

@@ -1,10 +1,11 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2019.
+//          Copyright Maksym V. Bilinets 2015 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
 
 #include <dst/allocator/global_counter_allocator.h>
+#include <dst/allocator/wary_allocator.h>
 
 #include <boost/test/unit_test.hpp>
 
@@ -56,6 +57,25 @@ BOOST_AUTO_TEST_CASE(test_void_allocator)
     static_cast<std::allocator_traits<int_allocator_type>::pointer>(p_void), 3);
 
   BOOST_TEST(void_allocator_type::allocated() == 0);
+}
+
+BOOST_AUTO_TEST_CASE(test_global_counter_allocator_with_wary_allocator)
+{
+  using allocator_type =
+    dst::global_counter_allocator<int, dst::wary_allocator<int>>;
+
+  allocator_type allocator_source;
+  allocator_type allocator(allocator_source);
+
+  BOOST_TEST(allocator_type::allocated() == 0);
+
+  const dst::wary_ptr<int> p_int = allocator.allocate(1);
+
+  BOOST_TEST(allocator_type::allocated() == sizeof(int));
+
+  allocator.deallocate(p_int, 1);
+
+  BOOST_TEST(allocator_type::allocated() == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

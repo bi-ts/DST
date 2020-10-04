@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2019.
+//          Copyright Maksym V. Bilinets 2015 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -59,13 +59,13 @@ public:
   {
   }
 
-  T* allocate(size_type n)
+  pointer allocate(size_type n)
   {
     detail::allocator::global_counter<true>::g_count += n * sizeof(T);
     return base_().allocate(n);
   }
 
-  void deallocate(T* p, size_type n)
+  void deallocate(pointer p, size_type n)
   {
     assert(detail::allocator::global_counter<true>::g_count >= n * sizeof(T));
     detail::allocator::global_counter<true>::g_count -= n * sizeof(T);
