@@ -312,6 +312,9 @@ public:
   static wary_ptr<T> pointer_to(
     typename std::conditional<std::is_void<T>::value, void_obj, T>::type& x);
 
+  /// Gets a raw pointer from a `wary_ptr` pointer. No runtime checks are done.
+  static T* to_address(const wary_ptr<T>& ptr);
+
 protected:
   /// A constructor to be used by pointer_to static method to create a loose
   /// pointer.
@@ -668,6 +671,11 @@ wary_ptr<T> wary_ptr<T>::pointer_to(
     detail::wary_ptr_det::wary_ptr_state<T>(std::addressof(x), nullptr));
 }
 
+template <typename T> T* wary_ptr<T>::to_address(const wary_ptr<T>& ptr)
+{
+  return ptr.state_.ptr();
+}
+
 template <typename T>
 wary_ptr<T>::wary_ptr(const detail::wary_ptr_det::wary_ptr_state<T>& state)
 : detail::wary_ptr_det::wary_ptr_base<T>(state)
@@ -779,3 +787,19 @@ TargetPtr down_cast(const wary_ptr<S>& ptr)
 /// @}
 
 } // dst
+
+namespace std
+{
+#ifdef _LIBCPP_VERSION    // We use libc++
+#if _LIBCPP_STD_VER <= 17 // C++17 or below
+inline namespace _LIBCPP_ABI_NAMESPACE
+{
+template <typename T>
+inline T* __to_raw_pointer(dst::wary_ptr<T> ptr) noexcept(true)
+{
+  return dst::wary_ptr<T>::to_address(ptr);
+}
+}
+#endif
+#endif
+}

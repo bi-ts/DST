@@ -207,7 +207,9 @@ TEST_F(Test_wary_allocator, map_with_wary_allocator)
 
   EXPECT_EQ(0, alloc.allocated_bytes());
 }
+*/
 
+#ifdef _LIBCPP_VERSION // We use libc++
 TEST_F(Test_wary_allocator, vector_with_wary_allocator)
 {
   typedef wary_allocator<std::int64_t> alloc_type;
@@ -233,4 +235,4 @@ TEST_F(Test_wary_allocator, vector_with_wary_allocator)
 
   EXPECT_EQ(0, alloc.allocated_bytes());
 }
-*/
+#endif
