@@ -1,10 +1,11 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2017.
+//          Copyright Maksym V. Bilinets 2015 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
 
 #include <dst/allocator/counter_allocator.h>
+#include <dst/allocator/wary_allocator.h>
 #include <dst/binary_tree/balanced_tree.h>
 #include <dst/binary_tree/mixin/ordering.h>
 
@@ -13,9 +14,16 @@
 namespace dst_test
 {
 
+#ifdef _LIBCPP_VERSION // We use libc++
+template <typename T>
+using test_allocator = dst::counter_allocator<T, dst::wary_allocator<T>>;
+#else
+template <typename T> using test_allocator = dst::counter_allocator<T>;
+#endif
+
 using ordering_tree =
   dst::binary_tree::balanced_tree<int,
-                                  dst::counter_allocator<int>,
+                                  test_allocator<int>,
                                   dst::binary_tree::AVL,
                                   dst::binary_tree::Ordering>;
 
