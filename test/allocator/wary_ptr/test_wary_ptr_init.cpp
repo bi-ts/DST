@@ -75,8 +75,8 @@ TEST_F(Test_wary_ptr_init, default_ctor)
 
 /// @fn wary_ptr<T>::~wary_ptr
 /// @test @b Test_wary_ptr_init.dtor_detects_mem_leak <br>
-///       Tests if @c std::logic_error exception is thrown when the last
-///       pointer to memory block is destroyed.
+///       Tests if @c the program is terminated when the last pointer to
+///       memory block is destroyed.
 TEST_F(Test_wary_ptr_init, dtor_detects_mem_leak)
 {
   ASSERT_DEATH(detail::wary_ptr_factory::create_associated_ptr(&value, 1),
