@@ -186,6 +186,24 @@ TEST_F(Test_wary_ptr_init, uninitialized)
   EXPECT_THROW(*ptr, std::logic_error);
 }
 
+/// @class dst::wary_ptr
+/// @test @b Test_wary_ptr_init.uninitialized_after_destruction <br>
+///       Makes sure that the memory taken by a `wary_ptr` doesn't contain
+///       initialization mark after destruction.
+TEST_F(Test_wary_ptr_init, uninitialized_after_destruction)
+{
+  wary_ptr<const int> ptr =
+    detail::wary_ptr_factory::create_associated_ptr(&value, 1);
+
+  EXPECT_TRUE(state(ptr).is_initialized());
+
+  neutralize(ptr);
+
+  ptr.~wary_ptr();
+
+  EXPECT_FALSE(state(ptr).is_initialized());
+}
+
 /// @fn wary_ptr<T>::operator=(wary_ptr<T>)
 /// @test @b Test_wary_ptr_init.uninitialized_assign <br>
 ///       Checks if uninitialized wary_ptr can be assigned.

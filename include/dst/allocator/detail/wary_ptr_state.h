@@ -38,6 +38,9 @@ public:
   /// Copy constructor.
   wary_ptr_state(const wary_ptr_state<T>& other);
 
+  /// Destructor.
+  ~wary_ptr_state();
+
   /// Assignment operator.
   wary_ptr_state<T>& operator=(const wary_ptr_state<T>& other);
 
@@ -102,6 +105,7 @@ public:
 private:
   static const std::size_t g_init_mark_size_ = 16;
   static std::array<char, g_init_mark_size_> g_init_mark_;
+  static std::array<char, g_init_mark_size_> g_init_mark_destroyed_;
   T* p_value_;
   std::shared_ptr<mem_block_info> p_mem_block_info_;
   std::array<char, g_init_mark_size_> init_mark_;
@@ -122,6 +126,11 @@ wary_ptr_state<T>::wary_ptr_state(const wary_ptr_state<T>& other)
 , p_mem_block_info_(other.p_mem_block_info_)
 , init_mark_(other.init_mark_)
 {
+}
+
+template <typename T> wary_ptr_state<T>::~wary_ptr_state()
+{
+  init_mark_ = g_init_mark_destroyed_;
 }
 
 template <typename T>
@@ -195,6 +204,11 @@ template <typename T> void wary_ptr_state<T>::shift(std::ptrdiff_t offset)
 template <typename T>
 std::array<char, wary_ptr_state<T>::g_init_mark_size_>
   wary_ptr_state<T>::g_init_mark_ = {"==INITIALIZED=="}; // 15 chars + '\0'
+
+template <typename T>
+std::array<char, wary_ptr_state<T>::g_init_mark_size_>
+  wary_ptr_state<T>::g_init_mark_destroyed_ = {
+    "~~~DESTROYED~~~"}; // 15 chars + '\0'
 
 }
 }
