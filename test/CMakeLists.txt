@@ -12,11 +12,9 @@ endif()
 include(get_google_test)
 get_google_test(1.10.0 82358affdd7ab94854c8ee73a180fc53)
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-  set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.8")
-endif()
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED OFF)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(dst_test
   allocator/test_allocator_utility.cpp
