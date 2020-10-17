@@ -38,11 +38,11 @@ macro(get_google_test google_test_version google_test_md5)
   include("${import_file_path}")
 
   if(NOT TARGET GTest::gtest)
-    message(FATAL_ERROR "Failed to import target 'test::test'")
+    message(FATAL_ERROR "Failed to import target 'GTest::gtest'")
   endif()
 
   if(NOT TARGET GTest::gtest_main)
-    message(FATAL_ERROR "Failed to import target 'test::test_main'")
+    message(FATAL_ERROR "Failed to import target 'GTest::gtest_main'")
   endif()
 endmacro()
 
