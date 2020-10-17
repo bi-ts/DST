@@ -14,7 +14,7 @@
 namespace dst_test
 {
 
-#ifdef _LIBCPP_VERSION // We use libc++
+#if defined(_LIBCPP_VERSION) && _LIBCPP_STD_VER > 17 // We use libc++ && C++20
 template <typename T>
 using test_allocator = dst::counter_allocator<T, dst::wary_allocator<T>>;
 #else

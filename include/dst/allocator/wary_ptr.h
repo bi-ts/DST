@@ -788,18 +788,35 @@ TargetPtr down_cast(const wary_ptr<S>& ptr)
 
 } // dst
 
+#ifdef _LIBCPP_VERSION   // We use libc++
+#if _LIBCPP_STD_VER > 17 // C++20
 namespace std
 {
-#ifdef _LIBCPP_VERSION    // We use libc++
-#if _LIBCPP_STD_VER <= 17 // C++17 or below
-inline namespace _LIBCPP_ABI_NAMESPACE
+template <typename T> struct pointer_traits<dst::wary_ptr<T>>
 {
-template <typename T>
-inline T* __to_raw_pointer(dst::wary_ptr<T> ptr) noexcept(true)
-{
-  return dst::wary_ptr<T>::to_address(ptr);
-}
+private:
+  struct void_obj;
+
+public:
+  using pointer = dst::wary_ptr<T>;
+  using element_type = T;
+  using difference_type = std::ptrdiff_t;
+
+  template <typename U> using rebind = dst::wary_ptr<U>;
+
+  /// @see wary_ptr<T>::pointer_to
+  static pointer pointer_to(
+    typename std::conditional<std::is_void<T>::value, void_obj, T>::type& x)
+  {
+    return pointer::pointer_to(x);
+  }
+
+  /// @see wary_ptr<T>::to_address
+  static T* to_address(const pointer& ptr)
+  {
+    return pointer::to_address(ptr);
+  }
+};
 }
 #endif
 #endif
-}
