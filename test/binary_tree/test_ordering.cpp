@@ -4,10 +4,11 @@
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
 
+#include <dst/binary_tree/mixin/ordering.h>
+
 #include <dst/allocator/counter_allocator.h>
 #include <dst/allocator/wary_allocator.h>
 #include <dst/binary_tree/balanced_tree.h>
-#include <dst/binary_tree/mixin/ordering.h>
 
 #include <boost/test/unit_test.hpp>
 
