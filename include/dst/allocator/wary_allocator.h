@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2020.
+//          Copyright Maksym V. Bilinets 2015 - 2021.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -12,6 +12,7 @@
 #include "detail/wary_ptr_factory.h"
 
 #include <cstddef> // std::size_t
+#include <cstring> // std::memset
 
 namespace dst
 {
@@ -100,7 +101,7 @@ wary_allocator<T, counter_policy>::allocate(size_type n, wary_ptr<const void>)
 {
   void* p_value = ::operator new(n * sizeof(T));
 
-  memset(p_value, 0xB0, n * sizeof(T));
+  std::memset(p_value, 0xB0, n * sizeof(T));
 
   counter_policy::template notify_objects_allocated<T>(n);
 

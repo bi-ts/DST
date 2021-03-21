@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2019.
+//          Copyright Maksym V. Bilinets 2015 - 2021.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -131,7 +131,7 @@ BinaryTreeIterator sibling(BinaryTreeIterator position)
   if (position == left(p))
     return right(p);
 
-  assert(position = right(p));
+  assert(position == right(p));
 
   return left(p);
 }

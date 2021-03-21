@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2019.
+//          Copyright Maksym V. Bilinets 2015 - 2021.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -54,6 +54,8 @@ private:
 
   struct node
   {
+    using data_type = pair_or_single<links, M>;
+
     template <typename... Args>
     node(node_pointer p_parent,
          node_pointer p_left,
@@ -80,7 +82,7 @@ private:
     }
 
     T value;
-    pair_or_single<links, M> data;
+    data_type data;
   };
 
   template <typename U>
@@ -283,7 +285,7 @@ protected:
   }
 
   ~binary() noexcept(
-    std::is_nothrow_destructible<decltype(p_nil_->data)>::value)
+    std::is_nothrow_destructible<typename node::data_type>::value)
   {
     if (p_nil_ == nullptr)
       return;

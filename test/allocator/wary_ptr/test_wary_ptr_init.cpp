@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2020.
+//          Copyright Maksym V. Bilinets 2015 - 2021.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -11,6 +11,7 @@
 
 #include <gtest/gtest.h>
 
+#include <cstring>     // std::memset
 #include <memory>      // std::pointer_traits
 #include <type_traits> // std::is_same
 
@@ -177,7 +178,7 @@ TEST_F(Test_wary_ptr_init, uninitialized)
 {
   char buffer[sizeof(wary_ptr<int>)] = {0};
 
-  memset(&buffer[0], 0xAB, sizeof(buffer));
+  std::memset(&buffer[0], 0xAB, sizeof(buffer));
 
   wary_ptr<int>& ptr = reinterpret_cast<wary_ptr<int>&>(*buffer);
 
@@ -211,7 +212,7 @@ TEST_F(Test_wary_ptr_init, uninitialized_assign)
 {
   char buffer[sizeof(wary_ptr<int>)] = {0};
 
-  memset(&buffer[0], 0xAB, sizeof(buffer));
+  std::memset(&buffer[0], 0xAB, sizeof(buffer));
 
   wary_ptr<int>& uninit_ptr = reinterpret_cast<wary_ptr<int>&>(*buffer);
 
