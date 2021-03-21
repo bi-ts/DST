@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2020.
+//          Copyright Maksym V. Bilinets 2015 - 2021.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -9,7 +9,8 @@
 #include "wary_ptr_state.h"
 
 #include <cstddef>     // std::ptrdiff_t
-#include <iterator>    // std::iterator, std::random_access_iterator_tag
+#include <iterator>    // std::random_access_iterator_tag
+#include <stdexcept>   // std::logic_error
 #include <type_traits> // std::is_void, std::true_type
 
 namespace dst
@@ -41,10 +42,15 @@ class wary_ptr_base;
 /// </blockquote>
 /// Thus, these operations can be declared only for non-void types.
 
-template <typename T>
-class wary_ptr_base<T, false>
-: public std::iterator<std::random_access_iterator_tag, T>
+template <typename T> class wary_ptr_base<T, false>
 {
+public:
+  using iterator_category = std::random_access_iterator_tag;
+  using value_type = T;
+  using difference_type = std::ptrdiff_t;
+  using pointer = T*;
+  using reference = T&;
+
 public:
   /// Dereference operator.
   /// @returns A reference to the object the pointer points to.

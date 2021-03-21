@@ -1,14 +1,15 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2020.
+//          Copyright Maksym V. Bilinets 2015 - 2021.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
 
 #pragma once
 
-#include <cstddef>  // std::size_t
-#include <memory>   // std::enable_shared_from_this, std::shared_ptr
-#include <typeinfo> // std::type_info
+#include <cstddef>   // std::size_t
+#include <memory>    // std::enable_shared_from_this, std::shared_ptr
+#include <stdexcept> // std::invalid_argument
+#include <typeinfo>  // std::type_info
 
 namespace dst
 {

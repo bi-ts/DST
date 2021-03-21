@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2019.
+//          Copyright Maksym V. Bilinets 2015 - 2021.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -28,8 +28,14 @@ class iterator_facade;
 
 template <typename Derived, typename T>
 class iterator_facade<Derived, std::output_iterator_tag, T>
-: public std::iterator<std::output_iterator_tag, void, void, void, void>
 {
+public:
+  using iterator_category = std::output_iterator_tag;
+  using value_type = void;
+  using difference_type = void;
+  using pointer = void;
+  using reference = void;
+
 public:
   iterator_facade& operator*()
   {
@@ -72,8 +78,14 @@ private:
 
 template <typename Derived, typename T>
 class iterator_facade<Derived, std::forward_iterator_tag, T>
-: public std::iterator<std::forward_iterator_tag, T>
 {
+public:
+  using iterator_category = std::forward_iterator_tag;
+  using value_type = T;
+  using difference_type = std::ptrdiff_t;
+  using pointer = T*;
+  using reference = T&;
+
 public:
   typename iterator_facade::reference operator*() const
   {
@@ -120,8 +132,14 @@ private:
 
 template <typename Derived, typename T>
 class iterator_facade<Derived, std::bidirectional_iterator_tag, T>
-: public std::iterator<std::bidirectional_iterator_tag, T>
 {
+public:
+  using iterator_category = std::bidirectional_iterator_tag;
+  using value_type = T;
+  using difference_type = std::ptrdiff_t;
+  using pointer = T*;
+  using reference = T&;
+
 public:
   typename iterator_facade::reference operator*() const
   {

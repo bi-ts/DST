@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2019.
+//          Copyright Maksym V. Bilinets 2015 - 2021.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -34,8 +34,14 @@ using enable_for_binary_tree_iterator =
 
 template <typename Derived, typename T>
 class iterator_facade<Derived, binary_tree_branch_iterator_tag, T>
-: public std::iterator<binary_tree_branch_iterator_tag, T>
 {
+public:
+  using iterator_category = binary_tree_branch_iterator_tag;
+  using value_type = T;
+  using difference_type = std::ptrdiff_t;
+  using pointer = T*;
+  using reference = T&;
+
 public:
   bool operator!() const
   {
@@ -103,8 +109,14 @@ private:
 
 template <typename Derived, typename T>
 class iterator_facade<Derived, binary_tree_iterator_tag, T>
-: public std::iterator<binary_tree_iterator_tag, T>
 {
+public:
+  using iterator_category = binary_tree_iterator_tag;
+  using value_type = T;
+  using difference_type = std::ptrdiff_t;
+  using pointer = T*;
+  using reference = T&;
+
 public:
   bool operator!() const
   {

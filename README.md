@@ -1,10 +1,9 @@
 # DST
 
-| OS X build status                | Windows build status             |
-|----------------------------------|----------------------------------|
-| [![Build Status][osx]][travrepo] | [![Build Status][win]][appvrepo] |
+## Build status
 
-[osx]: https://travis-ci.org/bi-ts/dst.svg?branch=master
-[travrepo]: https://travis-ci.org/bi-ts/dst
-[win]: https://ci.appveyor.com/api/projects/status/a7of2g3odmaxsowq/branch/master?svg=true
-[appvrepo]: https://ci.appveyor.com/project/bi-ts/dst/branch/master
+[![Build Status][buildBadge]][builds]
+
+[buildBadge]: https://github.com/bi-ts/dst/actions/workflows/cmake.yml/badge.svg
+[builds]: https://github.com/bi-ts/dst/actions
+

@@ -9,6 +9,12 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
+if (MSVC)
+  add_compile_options(/WX)
+else()
+  add_compile_options(-Werror)
+endif()
+
 add_library(dst INTERFACE)
 
 target_include_directories(dst INTERFACE
