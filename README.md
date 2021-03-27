@@ -4,6 +4,9 @@
 
 [![Build Status][buildBadge]][builds]
 
-[buildBadge]: https://github.com/bi-ts/dst/actions/workflows/cmake.yml/badge.svg
+[![Linux Build Status][linuxBuildBadge]][builds]
+
+[buildBadge]: https://github.com/bi-ts/dst/actions/workflows/cmake.yml/badge.svg?branch=master
+[linuxBuildBadge]: https://github.com/bi-ts/dst/actions/workflows/cmake-unix-makefiles.yml/badge.svg?branch=master
 [builds]: https://github.com/bi-ts/dst/actions
 
