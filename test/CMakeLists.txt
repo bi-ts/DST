@@ -1,16 +1,5 @@
 
-cmake_minimum_required(VERSION 3.5)
-
-find_package(Boost 1.75.0 EXACT QUIET)
-
-if(NOT Boost_FOUND)
-  include(get_boost)
-
-  get_boost(1.75.0 d3b276f6d22246171f93282910a1d583)
-endif()
-
-include(get_google_test)
-get_google_test(1.10.0 82358affdd7ab94854c8ee73a180fc53)
+cmake_minimum_required(VERSION 3.18.4)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
@@ -33,9 +22,7 @@ add_executable(dst_test
   test_utility.cpp
 )
 
-target_include_directories(dst_test PRIVATE "${Boost_INCLUDE_DIRS}")
-
-target_link_libraries(dst_test dst Boost::disable_autolinking)
+target_link_libraries(dst_test dst CONAN_PKG::boost)
 
 add_test(NAME dst_test COMMAND dst_test)
 
@@ -53,7 +40,7 @@ add_executable(dst_test_wary_ptr
   allocator/wary_ptr/tester_wary_ptr.h
 )
 
-target_link_libraries(dst_test_wary_ptr dst GTest::gtest_main)
+target_link_libraries(dst_test_wary_ptr dst CONAN_PKG::gtest)
 
 add_test(NAME dst_test_wary_ptr COMMAND dst_test_wary_ptr)
 

@@ -1,5 +1,5 @@
 
-//          Copyright Maksym V. Bilinets 2015 - 2017.
+//          Copyright Maksym V. Bilinets 2015 - 2021.
 // Distributed under the Boost Software License, Version 1.0.
 //      (See accompanying file LICENSE.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt )
@@ -14,6 +14,8 @@
 
 namespace
 {
+bool g_always_true = true;
+
 struct throw_in_ctor
 {
   throw_in_ctor()
@@ -26,8 +28,8 @@ struct throw_in_dtor
 {
   ~throw_in_dtor() noexcept(false)
   {
-    if (this) // Suppress warning (Visual Studio 14):
-              // "destructor never returns, potential memory leak".
+    if (g_always_true) // Suppress warning (Visual Studio):
+                       // "destructor never returns, potential memory leak".
     {
       throw 0;
     }
