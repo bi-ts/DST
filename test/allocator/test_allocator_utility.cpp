@@ -36,16 +36,20 @@ struct throw_in_dtor
   }
 };
 
+static int g_ctor_dtor_counter = 0;
+
 struct ctor_dtor
 {
   ctor_dtor()
   : data(42)
   {
+    ++g_ctor_dtor_counter;
   }
 
   ~ctor_dtor()
   {
-    data = 242;
+    --g_ctor_dtor_counter;
+    data = 242; // Warn! GCC may optimize this out in an optimized build.
   }
 
   int data;
@@ -56,19 +60,27 @@ BOOST_AUTO_TEST_SUITE(test_allocator_utility)
 
 BOOST_AUTO_TEST_CASE(test_construct_destroy)
 {
+  static_assert(sizeof(int) == sizeof(ctor_dtor), "Incompatible data types");
+
   int data = 0;
 
   ctor_dtor* p_obj = reinterpret_cast<ctor_dtor*>(&data);
 
+  BOOST_TEST(g_ctor_dtor_counter == 0);
   BOOST_TEST(p_obj->data == 0);
 
   dst::memory::construct(std::allocator<int>(), *p_obj);
 
+  BOOST_TEST(g_ctor_dtor_counter == 1);
   BOOST_TEST(p_obj->data == 42);
 
   dst::memory::destroy(std::allocator<int>(), *p_obj);
 
+  BOOST_TEST(g_ctor_dtor_counter == 0);
+
+#if (!defined(NDEBUG) && (!defined(__GNUC__) || defined(__clang__)))
   BOOST_TEST(p_obj->data == 242);
+#endif
 }
 
 BOOST_AUTO_TEST_CASE(test_allocate_aligned)
