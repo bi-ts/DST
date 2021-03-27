@@ -1,4 +1,4 @@
-name: CMake/Unix Makefiles
+name: CMake/Visual Studio 16
 
 on: [push]
 
@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-20.04]
+        os: [windows-2019]
         build-type: [Release, Debug]
 
     runs-on: ${{ matrix.os }}
@@ -16,7 +16,7 @@ jobs:
 
     - name: Install Conan package manager
       shell: bash
-      run: sudo pip3 install conan
+      run: pip install conan
 
     - name: Check Conan version
       shell: bash
@@ -28,14 +28,14 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{github.workspace}}/build-${{ matrix.build-type }}
-      run: cmake -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} $GITHUB_WORKSPACE
+      run: cmake $GITHUB_WORKSPACE -G"Visual Studio 16 2019"
 
     - name: Build
       working-directory: ${{github.workspace}}/build-${{ matrix.build-type }}
       shell: bash
-      run: cmake --build .
+      run: cmake --build . --config Debug
 
     - name: Test
       working-directory: ${{github.workspace}}/build-${{ matrix.build-type }}
       shell: bash
-      run: ctest -V
+      run: ctest -V -C Debug

@@ -1,4 +1,4 @@
-name: CMake/Unix Makefiles
+name: CMake/Xcode
 
 on: [push]
 
@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-20.04]
+        os: [macos-10.15]
         build-type: [Release, Debug]
 
     runs-on: ${{ matrix.os }}
@@ -28,14 +28,14 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{github.workspace}}/build-${{ matrix.build-type }}
-      run: cmake -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} $GITHUB_WORKSPACE
+      run: cmake $GITHUB_WORKSPACE -GXcode
 
     - name: Build
       working-directory: ${{github.workspace}}/build-${{ matrix.build-type }}
       shell: bash
-      run: cmake --build .
+      run: cmake --build . --config ${{ matrix.build-type }}
 
     - name: Test
       working-directory: ${{github.workspace}}/build-${{ matrix.build-type }}
       shell: bash
-      run: ctest -V
+      run: ctest -V -C ${{ matrix.build-type }}
