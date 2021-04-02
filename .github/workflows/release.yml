@@ -1,0 +1,50 @@
+name: Package
+
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-10.15]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Conan package manager
+      shell: bash
+      run: sudo pip3 install conan
+
+    - name: Check Conan version
+      shell: bash
+      run: conan --version
+
+    - name: Create Build Environment
+      run: mkdir ${{github.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{github.workspace}}/build
+      run: cmake -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/dst-${GITHUB_REF##*/} $GITHUB_WORKSPACE -GXcode
+
+    - name: Install
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      run: cmake --build . --target install
+
+    - name: Package
+      working-directory: ${{github.workspace}}
+      shell: bash
+      run: zip -r -X "dst-${GITHUB_REF##*/}.zip" "dst-${GITHUB_REF##*/}"
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: "*.zip"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
