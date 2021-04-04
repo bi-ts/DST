@@ -9,7 +9,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/conan.cmake")
 
-conan_cmake_run(CONANFILE conanfile.txt BASIC_SETUP CMAKE_TARGETS)
+conan_cmake_run(CONANFILE conanfile.txt BASIC_SETUP KEEP_RPATHS CMAKE_TARGETS)
 
 if (MSVC)
   add_compile_options(/WX)
